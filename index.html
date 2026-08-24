@@ -237,7 +237,7 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
   <p class="dek">A chat backend that abandons deliveries on purpose — and still guarantees every message arrives. The outbox, the waterline, and the road to Kafka.</p>
   <div class="byline">
     <span>Hormigas Messenger</span><span>·</span>
-    <span>substrate v1.4.6</span><span>·</span>
+    <span>substrate v1.4.7</span><span>·</span>
     <span>validated @ 2000 msg/s</span><span>·</span>
     <span>invariants code-verified</span>
   </div>
@@ -448,7 +448,7 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
 <section class="wrap">
   <span class="sec-label">05 — The guarantee</span>
   <h2>Why dropping a delivery loses nothing</h2>
-  <p>Everything above rests on four invariants. Each is enforced by the code, not merely intended — we verified them against the implementation (the transactional SQL, the Redis Lua behind the watermark, the retention config).</p>
+  <p>Everything above rests on five invariants. Each is enforced by the code, not merely intended — we verified them against the implementation (the transactional SQL, the Redis Lua behind the watermark, the recovery query, the retention config).</p>
 </section>
 
 <figure class="wide reveal">
@@ -474,17 +474,29 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
     <div class="invcard">
       <div class="badge">✓ code-verified</div>
       <div class="id">I<sub>4</sub></div>
-      <p>History retention is longer than the longest window in which a client might need recovery.</p>
-      <p class="basis">History 90 days ≫ outbox backstop 26 hours; frozen contracts 365 days. The recovery window fits comfortably inside history.</p>
+      <p>History retention bounds the recovery window: a client recovers messages within the documented 90-day window.</p>
+      <p class="basis">History 90 days (frozen contracts 365) ≫ the outbox backstop of 26 hours. A message a client returns for within 90 days is always still there.</p>
+    </div>
+    <div class="invcard">
+      <div class="badge">✓ code-verified</div>
+      <div class="id">I<sub>5</sub></div>
+      <p>Recovery order rides a durable database sequence, never the ULID identity.</p>
+      <p class="basis">Pagination orders by <code>message_history.id</code> (monotonic BIGSERIAL); the client's ULID cursor is resolved to it server-side. A non-monotonic identity can never reorder or skip a message.</p>
     </div>
   </div>
-  <figcaption><span class="fignum">Fig 6</span> — the four invariants that make an abandoned delivery safe.</figcaption>
+  <figcaption><span class="fignum">Fig 6</span> — the invariants that make an abandoned delivery safe. Each was verified against the implementation.</figcaption>
+  <p style="max-width:var(--measure); margin-left:auto; margin-right:auto; font-size:14.5px; color:var(--muted)"><strong>Two hardening residuals, deliberately open.</strong> A narrow GC window (a freshly-inserted row can be reclaimed before its first delivery) is closed by a 5-second grace on the reclaim — never delete a row younger than the longest insert-to-send latency. And there is no per-connection epoch, so a stale socket's late signal can spuriously disconnect a just-reconnected client; after I<sub>5</sub> that is no data loss, only an extra reconnect that self-heals from history — so we left it as hardening, not a fix.</p>
 </figure>
 
 <section class="wrap">
   <p>With those, abandoning a recipient is safe by construction. Its outbox rows get reclaimed, but the messages sit untouched in history. Recovery is <strong>client-pull, not server-push</strong>: on reconnect the client asks its conversation for everything since the last id it saw —</p>
   <pre class="code">GET /api/chats/{chatId}/messages?since=<span class="v">&lt;last-seen-id&gt;</span></pre>
-  <p>The cursor is <strong>scoped to the conversation</strong> and ordered by a server-assigned ULID (monotonic, so lexicographic order is chronological order) — there is no global-cursor ambiguity across conversations. The server never has to hold a delivery open, and the buffer is free to drain. This is what makes the abandon cheap, and cheapness is the whole reason we can afford to be aggressive with it.</p>
+  <p>The cursor is <strong>scoped to the conversation</strong> and ordered by the <strong>durable per-message database sequence</strong> (<code>message_history.id</code>, a monotonic BIGSERIAL) — not by the message's ULID. The client still passes its last-seen <code>messageId</code> (the ULID is the message's identity, and the client's dedupe key); the server resolves that to its sequence position and pages from there. Ordering therefore never depends on a random identifier being sortable — it rides the one thing the database already guarantees to be monotonic. The server never has to hold a delivery open, and the buffer is free to drain. This is what makes the abandon cheap, and cheapness is the whole reason we can afford to be aggressive with it.</p>
+
+  <div class="callout">
+    <p class="tag">identity is not order</p>
+    <p>Two questions, two mechanisms — never conflated. <strong>Identity</strong> ("which message is this?") is a ULID <code>messageId</code>, minted at acceptance, carried on the wire, unique without coordination, the client's dedupe key. <strong>Order</strong> ("what is its position in the log?") is always a database sequence: <code>outbox.id</code> for the delivery buffer and its Tetris watermark, <code>message_history.id</code> for durable pagination. The one bug a review caught here was ordering recovery by the <em>identity</em> — a plain ULID is only approximately chronological, so two messages in the same millisecond could sort out of order and a cursor could skip one. The fix was not a new counter; it was to stop asking the identity to do the sequence's job.</p>
+  </div>
 
   <h3>Offline recipients, said plainly</h3>
   <p>A pin exists only for a <em>connected</em> client. An offline recipient therefore holds nothing down: its outbox rows become reclaimable and may be garbage-collected while it sleeps. That is intentional. Its delivery state is abandoned exactly like a stuck client's; history is the recovery mechanism. "What stops Bob's outbox rows from vanishing while he's offline for ten hours?" — nothing, and by design. He reads them back from history when he returns, which is why I<sub>4</sub> matters.</p>
@@ -492,8 +504,8 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
   <h3>Duplicates are expected — dedupe by id</h3>
   <p>At-least-once means a client can legitimately receive the same message twice: once via live push and again via reconnect-sync, or twice from a lease re-claim. Every delivered frame carries a stable server ULID (<code>messageId</code>) plus the sender's original id (<code>correlationId</code>), and the same identifiers appear on the history copy. The client contract is therefore explicit: <strong>deduplicate by <code>messageId</code> across live delivery and history synchronization.</strong> Recovery without dedupe would manufacture the very duplicates it exists to prevent.</p>
 
-  <h3>The one number that proves it's working</h3>
-  <p>Held under load, one ratio tells the whole story: <strong>deliveries per accepted message ≈ 1.0</strong>. When it climbs toward 2, the system is re-delivering — the waterline is stuck and the poller is churning. Held at 1.0, every message is delivered essentially once, the buffer stays bounded, and reconnects are the honest cost of the clients that genuinely fell behind.</p>
+  <h3>The clearest signal (not a proof)</h3>
+  <p>Held under load, one ratio best exposes re-delivery pressure: <strong>deliveries per accepted message</strong>. Near 1.0, every message is delivered essentially once and the buffer stays bounded; climbing toward 2, the system is re-delivering — the waterline is stuck and the poller is churning. It is a health signal, not a correctness proof: 100 accepted / 100 delivered could still hide one message lost and another sent twice. The actual proof of no-loss is <em>reconciliation</em> — a load run that reconciles every accepted message against what each recipient received (live plus history-sync), which is how the invariants above were validated. Reconnects, meanwhile, are the honest cost of the clients that genuinely fell behind.</p>
 </section>
 
 <figure class="wide reveal">
@@ -535,7 +547,7 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
 <figure class="wide reveal">
   <div class="tbl-scroll">
     <table>
-      <caption>The buffers and batchers of the delivery path (v1.4.6 defaults)</caption>
+      <caption>The buffers and batchers of the delivery path (v1.4.7 defaults)</caption>
       <thead><tr><th>Buffer / batcher</th><th>Setting</th><th>Job</th></tr></thead>
       <tbody>
         <tr><td class="k">inbound queue</td><td><span class="num">8000</span></td><td>Backpressure on accept. Over the limit, a send is shed as "overloaded" rather than swallowed.</td></tr>
@@ -578,7 +590,7 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
 <section class="wrap">
   <span class="sec-label">09 — The horizon</span>
   <h2>A rehearsal for the log</h2>
-  <p>Every decision here was made with one eye on the thing we haven't built yet. The outbox is a partitioned log drawn in a relational table; the <code>BIGSERIAL</code> is an offset; the Tetris waterline is a consumer's committed position.</p>
+  <p>Every decision here was made with one eye on the thing we haven't built yet. The outbox is a partitioned log drawn in a relational table; the <code>BIGSERIAL</code> is a <em>global log-position analogue</em> (not yet a per-partition offset — partitioning by recipient is what turns it into one); the Tetris waterline is a consumer's committed position.</p>
 </section>
 
 <figure class="wide reveal">
@@ -604,7 +616,7 @@ redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"
 
 <footer>
   <div class="wrap">
-    <span>Hormigas Messenger — delivery substrate v1.4.6</span>
+    <span>Hormigas Messenger — delivery substrate v1.4.7</span>
     <span>Postgres outbox · Redis waterline · Kafka-bound</span>
   </div>
 </footer>
