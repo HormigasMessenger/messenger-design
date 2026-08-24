@@ -1,4 +1,4 @@
-<title>Below the Waterline</title>
+<title>The Message You Can Afford to Drop</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9,19 +9,20 @@
   --ground:#F1F4F3; --surface:#FFFFFF; --surface-2:#F6F9F8;
   --ink:#13201F; --muted:#566765; --faint:#7E8F8D;
   --accent:#0E7C7B; --accent-deep:#0A5250; --accent-soft:#DCEEEC;
-  --amber:#A9600F; --amber-soft:#F3E7D4;
+  --amber:#A9600F; --amber-soft:#F4E8D6; --amber-line:#C67A1E;
+  --good:#0E7C5A; --good-soft:#D9EEE4;
   --hair:#D8E2E0; --hair-strong:#C3D2D0;
   --code-bg:#F2F6F5; --code-ink:#15302E;
   --shadow:0 1px 2px rgba(19,32,31,.05), 0 8px 30px rgba(19,32,31,.06);
-  --measure:68ch; --wide:1080px;
+  --measure:70ch; --wide:1120px;
 }
-:root:not([data-theme="light"]){ }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
     --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
     --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
-    --amber:#D9993F; --amber-soft:#2A2114;
+    --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+    --good:#3FBF8C; --good-soft:#12281F;
     --hair:#21302E; --hair-strong:#2C403D;
     --code-bg:#0E1A19; --code-ink:#CFE3E0;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
@@ -31,7 +32,8 @@
   --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
   --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
   --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
-  --amber:#D9993F; --amber-soft:#2A2114;
+  --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+  --good:#3FBF8C; --good-soft:#12281F;
   --hair:#21302E; --hair-strong:#2C403D;
   --code-bg:#0E1A19; --code-ink:#CFE3E0;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
@@ -39,20 +41,14 @@
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; background:var(--ground); color:var(--ink);
-  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
-  font-size:18px; line-height:1.7; font-weight:400;
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif; font-size:18px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility}
 .wrap{max-width:var(--measure); margin:0 auto; padding:0 24px}
-.bleed{max-width:var(--wide); margin-left:auto; margin-right:auto; padding:0 24px}
+.bleed{max-width:var(--wide); margin:0 auto; padding:0 24px}
 
-/* ---- header ---- */
-header.top{
-  position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--ground) 86%, transparent);
-  backdrop-filter:blur(8px); border-bottom:1px solid var(--hair);
-}
+header.top{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--ground) 86%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--hair)}
 .top-in{max-width:var(--wide); margin:0 auto; padding:14px 24px; display:flex; align-items:baseline; justify-content:space-between; gap:16px}
 .brand{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
 .brand b{color:var(--accent); font-weight:500}
@@ -60,122 +56,167 @@ header.top{
 .toggle:hover{color:var(--ink); border-color:var(--accent)}
 .toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 
-/* ---- hero ---- */
-.hero{padding:76px 0 30px}
-.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 22px}
-h1{
-  font-family:"Newsreader",Georgia,serif; font-weight:440; font-size:clamp(2.9rem,7vw,5.2rem);
-  line-height:.98; letter-spacing:-.015em; margin:0; text-wrap:balance; color:var(--ink);
-}
+.hero{padding:76px 0 24px}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 22px}
+h1{font-family:"Newsreader",Georgia,serif; font-weight:440; font-size:clamp(2.7rem,6.4vw,4.9rem); line-height:1.0; letter-spacing:-.015em; margin:0; text-wrap:balance; color:var(--ink)}
 h1 em{font-style:italic; color:var(--accent-deep)}
-.dek{font-family:"Newsreader",Georgia,serif; font-weight:380; font-style:italic; font-size:clamp(1.25rem,2.6vw,1.6rem); line-height:1.4; color:var(--muted); margin:26px 0 0; max-width:34ch; text-wrap:balance}
-.byline{margin-top:30px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.05em; color:var(--faint); display:flex; flex-wrap:wrap; gap:8px 18px}
-.byline span{white-space:nowrap}
+.dek{font-family:"Newsreader",Georgia,serif; font-weight:380; font-style:italic; font-size:clamp(1.25rem,2.5vw,1.62rem); line-height:1.42; color:var(--muted); margin:26px 0 0; max-width:40ch; text-wrap:balance}
+.byline{margin-top:28px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.05em; color:var(--faint); display:flex; flex-wrap:wrap; gap:8px 18px}
 
-/* the waterline motif */
-.waterline{height:2px; background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 88%,transparent); margin:0; border:0; opacity:.85}
-.waterline.tick{position:relative}
-.waterline.tick::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+.waterline{height:2px; background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 88%,transparent); margin:0; border:0; opacity:.85; position:relative}
+.waterline::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
 
-/* ---- prose ---- */
-main{padding:20px 0 40px}
-section{padding:44px 0}
-h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.7rem,3.4vw,2.35rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+main{padding:14px 0 40px}
+section{padding:40px 0}
+.abstract{background:var(--surface); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:12px; padding:24px 26px; margin:34px 0 8px; box-shadow:var(--shadow)}
+.abstract .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+.abstract p{margin:8px 0; font-size:1.02rem}
 .sec-label{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:14px}
-h3{font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:1.12rem; letter-spacing:.01em; margin:34px 0 6px; color:var(--ink)}
+h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.7rem,3.4vw,2.35rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+h3{font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:1.12rem; margin:32px 0 6px}
 p{margin:16px 0}
 .lead{font-size:1.18rem; line-height:1.6}
 a{color:var(--accent-deep); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
 strong{font-weight:600; color:var(--ink)}
-em{font-style:italic}
-code{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--code-bg); color:var(--code-ink); padding:.12em .38em; border-radius:4px; border:1px solid var(--hair)}
-.kw{color:var(--accent-deep)}
+code{font-family:"IBM Plex Mono",monospace; font-size:.85em; background:var(--code-bg); color:var(--code-ink); padding:.12em .38em; border-radius:4px; border:1px solid var(--hair)}
 
 ul.notes{list-style:none; padding:0; margin:18px 0; display:flex; flex-direction:column; gap:12px}
 ul.notes li{padding-left:26px; position:relative}
 ul.notes li::before{content:""; position:absolute; left:2px; top:.72em; width:9px; height:2px; background:var(--accent)}
 
-/* pull quote */
 .pull{border-left:2px solid var(--accent); padding:6px 0 6px 26px; margin:36px 0; font-family:"Newsreader",Georgia,serif; font-style:italic; font-weight:380; font-size:clamp(1.35rem,3vw,1.7rem); line-height:1.32; color:var(--ink); text-wrap:balance}
 
-/* callout */
-.callout{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:22px 24px; margin:26px 0; box-shadow:var(--shadow)}
+.callout{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:20px 22px; margin:26px 0; box-shadow:var(--shadow)}
 .callout .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 8px}
-.callout.warn{border-color:var(--hair-strong)}
 .callout.warn .tag{color:var(--amber)}
 .callout p{margin:6px 0}
-.callout p:first-of-type{margin-top:0}
 
-/* code / config block */
-pre.code{background:var(--code-bg); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:18px 20px; margin:24px 0; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:14px; line-height:1.65; color:var(--code-ink)}
+pre.code{background:var(--code-bg); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:16px 18px; margin:22px 0; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--code-ink)}
 pre.code .c{color:var(--faint)}
 pre.code .v{color:var(--accent-deep); font-weight:500}
+pre.code .r{color:var(--amber)}
 
-/* ---- diagrams ---- */
-figure{margin:34px 0; }
+figure{margin:34px 0}
 figure.wide{max-width:var(--wide); margin-left:calc(50% - min(50vw,var(--wide)/2)); margin-right:auto; padding:0 24px}
-figcaption{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.04em; color:var(--faint); margin-top:14px; text-align:center}
+figcaption{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-top:14px; text-align:center}
 .panel{background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:30px; box-shadow:var(--shadow)}
+.fignum{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:500}
 
 /* dual-write */
 .dual{display:flex; align-items:stretch; gap:0; flex-wrap:wrap}
-.dual .src{flex:0 0 auto; align-self:center; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--muted); padding-right:8px}
+.dual .src{align-self:center; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--muted); padding-right:10px}
 .tx{flex:1 1 320px; border:1.5px dashed var(--accent); border-radius:12px; padding:16px; display:flex; gap:14px; position:relative}
 .tx .txlabel{position:absolute; top:-10px; left:16px; background:var(--surface); padding:0 8px; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
 .store{flex:1; border-radius:9px; padding:14px; border:1px solid var(--hair)}
-.store.hist{background:var(--accent-soft)}
-.store.ob{background:var(--surface-2)}
+.store.hist{background:var(--accent-soft)} .store.ob{background:var(--surface-2)}
 .store .nm{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--ink)}
 .store .desc{font-size:13.5px; color:var(--muted); margin-top:4px; line-height:1.45}
 .store .role{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; margin-top:9px}
-.store.hist .role{color:var(--accent-deep)}
-.store.ob .role{color:var(--amber)}
+.store.hist .role{color:var(--accent-deep)} .store.ob .role{color:var(--amber)}
 
-/* waterline / tetris diagram */
-.tetris{display:grid; grid-template-columns:auto 1fr auto; gap:0 16px; align-items:center; font-family:"IBM Plex Mono",monospace; font-size:12.5px}
-.tcol{display:flex; flex-direction:column-reverse; gap:5px}
-.row{display:flex; align-items:center; gap:10px; padding:7px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--hair)}
-.row .id{color:var(--faint); width:52px}
-.row .who{color:var(--ink)}
-.row.del{opacity:.4; text-decoration:line-through; background:transparent; border-style:dashed}
-.row.pin{border-color:var(--accent); background:var(--accent-soft)}
-.row.minpin{border-color:var(--amber); background:var(--amber-soft)}
-.tetris .mark{position:relative}
-.wl{grid-column:2; height:0; border-top:2px solid var(--amber); position:relative; margin:4px 0}
-.wl span{position:absolute; right:0; top:-9px; background:var(--ground); padding:0 6px; font-size:11px; color:var(--amber); letter-spacing:.06em}
-.legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:18px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
-.legend i{display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-1px; margin-right:6px; border:1px solid var(--hair)}
-.legend .i-pin{background:var(--accent-soft); border-color:var(--accent)}
-.legend .i-min{background:var(--amber-soft); border-color:var(--amber)}
-.legend .i-del{background:transparent; border-style:dashed}
-
-/* pipeline flow */
+/* pipeline */
 .flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:10px}
 .stage{flex:1 1 120px; min-width:120px; background:var(--surface-2); border:1px solid var(--hair); border-radius:10px; padding:13px 14px}
 .stage .n{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--accent-deep)}
 .stage .t{font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4}
 .arrow{align-self:center; color:var(--faint); font-size:16px; flex:0 0 auto}
 
-/* control-surface table */
-.tbl-scroll{overflow-x:auto; margin:26px 0}
+/* tetris waterline */
+.tetris{display:grid; grid-template-columns:auto 1fr; gap:0 16px; align-items:center; font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+.tcol{display:flex; flex-direction:column-reverse; gap:5px}
+.row{display:flex; align-items:center; gap:10px; padding:7px 12px; border-radius:6px; background:var(--surface-2); border:1px solid var(--hair)}
+.row .id{color:var(--faint); width:52px} .row .who{color:var(--ink)}
+.row.del{opacity:.42; text-decoration:line-through; background:transparent; border-style:dashed}
+.row.pin{border-color:var(--accent); background:var(--accent-soft)}
+.wl{grid-column:2; height:0; border-top:2px solid var(--amber-line); position:relative; margin:4px 0}
+.wl span{position:absolute; right:0; top:-9px; background:var(--surface); padding:0 6px; font-size:11px; color:var(--amber); letter-spacing:.06em}
+.legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:18px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
+.legend i{display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-1px; margin-right:6px; border:1px solid var(--hair)}
+.legend .i-pin{background:var(--accent-soft); border-color:var(--accent)}
+.legend .i-min{background:transparent; border:2px solid var(--amber-line)}
+.legend .i-del{background:transparent; border-style:dashed}
+
+/* id-set chips (contiguous pin) */
+.setrow{display:flex; flex-wrap:wrap; align-items:center; gap:16px; justify-content:center; margin:6px 0}
+.setgrp{display:flex; flex-direction:column; align-items:center; gap:10px}
+.chips{display:flex; gap:8px}
+.chip{font-family:"IBM Plex Mono",monospace; font-size:14px; padding:9px 13px; border-radius:8px; border:1px solid var(--hair-strong); background:var(--surface-2); color:var(--ink)}
+.chip.ack{opacity:.4; text-decoration:line-through; border-style:dashed}
+.chip.pin{border-color:var(--accent); background:var(--accent-soft); color:var(--accent-deep); font-weight:500}
+.setlbl{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted); text-align:center}
+.setlbl b{color:var(--accent-deep)}
+.op{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--amber); align-self:center; text-align:center}
+
+/* before/after abandon */
+.ba{display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:stretch}
+.ba .card{background:var(--surface-2); border:1px solid var(--hair); border-radius:12px; padding:16px 18px}
+.ba .card h4{margin:0 0 12px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500}
+.zline{display:flex; align-items:center; gap:10px; font-family:"IBM Plex Mono",monospace; font-size:13px; padding:7px 10px; border-radius:6px; margin:6px 0; background:var(--surface); border:1px solid var(--hair)}
+.zline .sc{color:var(--faint); width:44px}
+.zline.stuck{border-color:var(--amber-line); background:var(--amber-soft)}
+.zline.stuck .who{color:var(--amber)}
+.zline.gone{opacity:.4; text-decoration:line-through; border-style:dashed}
+.zline.newmin{border-color:var(--accent); background:var(--accent-soft)}
+.ba .op-mid{align-self:center; text-align:center; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--amber); max-width:130px}
+.ba .op-mid b{color:var(--ink)}
+.grew{margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
+
+/* retention timeline */
+.timeline{display:flex; flex-direction:column; gap:14px; font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+.trow{display:grid; grid-template-columns:160px 1fr; gap:14px; align-items:center}
+.trow .lab{color:var(--ink)}
+.trow .lab small{display:block; color:var(--faint); font-size:11px}
+.bar{height:26px; border-radius:6px; display:flex; align-items:center; padding:0 12px; color:#fff; font-size:11.5px; white-space:nowrap}
+.bar.ob{background:var(--amber-line); width:6%}
+.bar.hist{background:var(--accent); width:64%}
+.bar.frozen{background:var(--accent-deep); width:100%}
+.trow .lab.win small{color:var(--amber)}
+.tnote{margin-top:8px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
+
+/* invariants */
+.inv{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px}
+.invcard{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); position:relative}
+.invcard .id{font-family:"Newsreader",serif; font-style:italic; font-size:1.5rem; color:var(--accent-deep); line-height:1}
+.invcard .badge{position:absolute; top:16px; right:18px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--good); background:var(--good-soft); border:1px solid color-mix(in srgb,var(--good) 40%, transparent); border-radius:999px; padding:3px 9px}
+.invcard p{margin:10px 0 0; font-size:15px; line-height:1.5}
+.invcard .basis{margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--faint); line-height:1.5}
+
+/* kafka map */
+.kmap{display:flex; flex-direction:column; gap:0}
+.kmap .krow{display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; padding:14px 0; border-bottom:1px solid var(--hair)}
+.kmap .krow:last-child{border-bottom:0}
+.kmap .now{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--muted)}
+.kmap .to{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); font-weight:500}
+.kmap .ar{color:var(--faint)}
+
+/* metric tiles */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px}
+.tile{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:16px 18px; box-shadow:var(--shadow)}
+.tile.star{border-color:var(--accent); border-width:1.5px}
+.tile .m-lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.tile .m-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:1.5rem; color:var(--ink); margin-top:6px}
+.tile .m-hint{font-size:12.5px; color:var(--faint); margin-top:4px; line-height:1.4}
+.tile.star .m-lab{color:var(--accent-deep)}
+
+/* tables */
+.tbl-scroll{overflow-x:auto; margin:24px 0}
 table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:560px}
-caption{caption-side:top; text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.06em; color:var(--faint); margin-bottom:12px}
+caption{caption-side:top; text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-bottom:12px}
 th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--hair); vertical-align:top}
 thead th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; border-bottom:1px solid var(--hair-strong)}
 td.k{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); white-space:nowrap}
 td .num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink)}
 tbody tr:hover{background:var(--surface-2)}
-.win td{background:var(--accent-soft)}
-.win td.k{color:var(--accent-deep); font-weight:500}
+.win td{background:var(--accent-soft)} .win td.k{font-weight:500}
 
-/* footer */
-footer{border-top:1px solid var(--hair); margin-top:30px; padding:34px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.03em}
+footer{border-top:1px solid var(--hair); margin-top:30px; padding:34px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px}
 footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px}
 
-@media (max-width:640px){
+@media (max-width:720px){
   body{font-size:17px}
-  .hero{padding:52px 0 24px}
-  .tx{flex-direction:column}
+  .ba{grid-template-columns:1fr} .ba .op-mid{max-width:none}
+  .kmap .krow{grid-template-columns:1fr} .kmap .ar{display:none}
+  .trow{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:no-preference){
   .reveal{opacity:0; transform:translateY(10px); transition:opacity .7s ease, transform .7s ease}
@@ -185,38 +226,48 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
 
 <header class="top">
   <div class="top-in">
-    <div class="brand">Hormigas · <b>Messenger</b> · delivery notes</div>
+    <div class="brand">Hormigas · <b>Messenger</b> · a delivery whitepaper</div>
     <button class="toggle" id="tg" aria-label="Toggle color theme">Theme</button>
   </div>
 </header>
 
 <div class="bleed hero">
-  <p class="eyebrow">Systems / message delivery</p>
-  <h1>Below the <em>waterline</em></h1>
-  <p class="dek">How a chat backend delivers every message at least once over a Postgres outbox and a Redis watermark — and stays shaped for the Kafka it hasn't moved to yet.</p>
+  <p class="kicker">A messaging-systems whitepaper</p>
+  <h1>The message you can <em>afford to drop</em></h1>
+  <p class="dek">A chat backend that abandons deliveries on purpose — and still guarantees every message arrives. The outbox, the waterline, and the road to Kafka.</p>
   <div class="byline">
-    <span>Hormigas Messenger</span>
-    <span>·</span>
-    <span>substrate v1.4.6</span>
-    <span>·</span>
-    <span>validated @ 2000 msg/s</span>
+    <span>Hormigas Messenger</span><span>·</span>
+    <span>substrate v1.4.6</span><span>·</span>
+    <span>validated @ 2000 msg/s</span><span>·</span>
+    <span>invariants code-verified</span>
   </div>
 </div>
-<div class="bleed"><hr class="waterline tick"></div>
+<div class="bleed"><hr class="waterline"></div>
 
 <main>
 
-<section class="wrap">
-  <p class="lead">A one-to-one chat looks trivial until you count what has to survive a dropped socket. A message accepted from a sender must reach its recipient <em>eventually</em>, even if that recipient is asleep, offline, on a train, or reconnecting three times a minute. The honest way to say this is: the system owes an <strong>at-least-once</strong> guarantee, and it has to honor it without letting the machinery that guarantees it grow without bound.</p>
+<div class="wrap">
+  <div class="abstract reveal">
+    <p class="tag">Abstract</p>
+    <p>A one-to-one chat owes an <strong>at-least-once</strong> contract: every accepted message must reach its recipient, even across dropped sockets and hours offline. We honor it with two Postgres stores — a durable <code>message_history</code> and a transient per-recipient <code>outbox</code> — coordinated by a single Redis "waterline" and drained by a fleet of bounded batchers. The counter-intuitive core: because history is the truth, the system can <em>abandon</em> a stuck delivery outright and let the client recover it on reconnect. This paper documents the mechanism, the four invariants that make it safe (each verified against the code), the single global-minimum trade-off that shapes everything, the load numbers that settled the configuration at 2000 msg/s, and why the whole design is a deliberate rehearsal for Kafka.</p>
+  </div>
+</div>
 
-  <p>Our delivery layer is two stores, one watermark, and a small fleet of batchers. This is the design in detail — the parts, the one trade-off that shapes all the others, and why the whole thing is deliberately built to be thrown away in favor of a partitioned log.</p>
+<section class="wrap">
+  <p class="lead">A one-to-one chat looks trivial until you count what has to survive a dropped socket. A message accepted from a sender must reach its recipient <em>eventually</em> — even if that recipient is asleep, offline, on a train, or reconnecting three times a minute.</p>
+  <p>The honest way to state the guarantee is in two clauses, because they are different promises:</p>
+  <ul class="notes">
+    <li><strong>At-least-once <em>live</em> delivery</strong> — while a recipient is connected, the system keeps pushing a message to its socket until acknowledged.</li>
+    <li><strong>Durable eventual recovery</strong> — if live delivery is given up on, the message is not lost; it remains in durable history and the client pulls it on the next reconnect.</li>
+  </ul>
+  <p>That distinction is not pedantry — it is the whole design. Live push is best-effort and abandonable; the durable record is what actually guarantees the message. Everything below follows from putting those two responsibilities in two different places.</p>
 </section>
 
 <section class="wrap">
   <span class="sec-label">01 — Two stores</span>
   <h2>Durable truth and a delivery buffer</h2>
-  <p>Every accepted message is written to <strong>two</strong> places in a single transaction. The first is <code>message_history</code> — the durable record of what was said, keyed for retrieval by conversation. The second is the <code>outbox</code> — one row <em>per recipient</em>, a transient instruction that says "this person still needs to receive this."</p>
-  <p>The two are not redundant. History is the <em>truth</em>; the outbox is a <em>to-do list</em>. History is read back by clients on demand and aged out slowly by a retention clock. The outbox is drained aggressively and, ideally, empty. Critically, the history insert runs <strong>first and in the same transaction</strong> as the outbox insert — so a message can never be queued for delivery without already being durably recorded.</p>
+  <p>Every accepted message is written to <strong>two</strong> places in a single transaction. <code>message_history</code> is the durable record of what was said, keyed for retrieval by conversation. The <code>outbox</code> holds one row <em>per recipient</em> — a transient instruction that says "this person still needs to receive this."</p>
+  <p>They are not redundant. History is the <em>truth</em>; the outbox is a <em>to-do list</em>. History is read back by clients on demand and aged out slowly by a retention clock. The outbox is drained aggressively and, ideally, empty. Crucially the history insert runs <strong>first and in the same transaction</strong> as the outbox insert — a message can never be queued for delivery without already being durably recorded.</p>
 </section>
 
 <figure class="wide reveal">
@@ -231,26 +282,25 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
           <div class="role">source of truth</div>
         </div>
         <div class="store ob">
-          <div class="nm">outbox &nbsp;<span style="color:var(--faint)">(id&nbsp;BIGSERIAL)</span></div>
+          <div class="nm">outbox <span style="color:var(--faint)">(id&nbsp;BIGSERIAL)</span></div>
           <div class="desc">One row per recipient. A delivery instruction. Deleted once safely delivered. Ideally empty.</div>
           <div class="role">transient buffer</div>
         </div>
       </div>
     </div>
   </div>
-  <figcaption>Accept once, record once, fan out N delivery rows — atomically.</figcaption>
+  <figcaption><span class="fignum">Fig 1</span> — accept once, record once, fan out N delivery rows — atomically.</figcaption>
 </figure>
 
 <section class="wrap">
-  <p>That single ordering decision is the backbone of the whole guarantee. Delivery can fail, retry, storm, or be abandoned entirely — none of it can lose a message, because losing a delivery row never touches the history row that was written before it. We will lean on this fact repeatedly.</p>
-  <p>The outbox <code>id</code> is a <code>BIGSERIAL</code> — a monotonic integer. That is not an incidental choice. It is a per-buffer <em>offset</em>, and treating it as one is what keeps this design a rehearsal for Kafka rather than a detour away from it.</p>
+  <p>That single ordering decision is the backbone of the whole guarantee. Delivery can fail, retry, storm, or be abandoned entirely — none of it can lose a message, because losing a delivery row never touches the history row written before it.</p>
+  <p>The outbox <code>id</code> is a <code>BIGSERIAL</code> — a monotonic integer, and not incidentally. It is a per-buffer <em>offset</em>, and treating it as one is what keeps this design a rehearsal for Kafka rather than a detour away from it.</p>
 </section>
 
 <section class="wrap">
   <span class="sec-label">02 — Delivery</span>
   <h2>Two paths to the socket</h2>
-  <p>A message reaches an online recipient by one of two routes. When the recipient is connected at the moment of send, a <strong>fast path</strong> hands the frame straight to their WebSocket, decoupled from the persistence write so a slow disk never stalls a live conversation. Everything else — offline recipients, missed sends, retries — is the job of the <strong>outbox poller</strong>.</p>
-  <p>The poller wakes on a short interval, claims a batch of the oldest un-delivered rows under a <em>visibility lease</em>, and delivers them concurrently. Oldest-first is a rule, not an optimization: reading the buffer from the bottom up is what makes the watermark below meaningful.</p>
+  <p>A message reaches an online recipient by one of two routes. When the recipient is connected at the moment of send, a <strong>fast path</strong> hands the frame straight to their WebSocket, decoupled from the persistence write so a slow disk never stalls a live conversation. Everything else — offline recipients, missed sends, retries — is the job of the <strong>outbox poller</strong>, which wakes on a short interval, claims a batch of the oldest un-delivered rows under a <em>visibility lease</em>, and delivers them concurrently. Oldest-first is a rule, not an optimization: reading the buffer from the bottom up is what makes the waterline meaningful.</p>
 </section>
 
 <figure class="wide reveal">
@@ -262,38 +312,38 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
       <div class="arrow">→</div>
       <div class="stage"><div class="n">deliver</div><div class="t">fast path, else poller claims a batch</div></div>
       <div class="arrow">→</div>
-      <div class="stage"><div class="n">ACK</div><div class="t">client confirms receipt of the id</div></div>
+      <div class="stage"><div class="n">ACK</div><div class="t">client confirms an id</div></div>
       <div class="arrow">→</div>
-      <div class="stage"><div class="n">reclaim</div><div class="t">watermark advances; GC deletes</div></div>
+      <div class="stage"><div class="n">reclaim</div><div class="t">waterline rises; GC deletes</div></div>
     </div>
   </div>
-  <figcaption>The inbound → persist → deliver → acknowledge → reclaim cycle.</figcaption>
+  <figcaption><span class="fignum">Fig 2</span> — accept → persist → deliver → acknowledge → reclaim.</figcaption>
 </figure>
 
 <section class="wrap">
-  <p>A delivered row is not deleted on acknowledgement. It is deleted by garbage collection, and only once <em>everyone below it in the buffer</em> has been dealt with. To understand why, you have to look at the waterline.</p>
+  <p>A delivered row is not deleted on acknowledgement. It is deleted by garbage collection, and only once <em>everyone below it in the buffer</em> has been dealt with. To see why, look at the waterline.</p>
 </section>
 
 <section class="wrap">
-  <span class="sec-label">03 — The watermark</span>
+  <span class="sec-label">03 — The waterline</span>
   <h2>Tetris, and the safe-delete line</h2>
   <p>The outbox is one table shared by every recipient, ordered by that monotonic <code>id</code>. Garbage collection is a single, cheap, sequential statement:</p>
   <pre class="code"><span class="c"># reclaim everything below the global safe-delete line</span>
 DELETE FROM outbox WHERE id &lt; <span class="v">safe_delete_id</span>;</pre>
-  <p>The whole trick is computing <code>safe_delete_id</code>. In Redis we keep, per connected client, the <strong>lowest outbox id it has not yet acknowledged</strong> — its pin. The global safe-delete line is the <strong>minimum pin across all clients</strong>. Nothing at or above the lowest outstanding message may be deleted, because some client still needs it; everything below it is, by definition, delivered-and-acknowledged for everyone, and can go.</p>
-  <p>We call the bookkeeping <em>Tetris</em>: rows stack up by id, and the floor rises underneath them as the laggards catch up. A prefix delete against a shared, monotonic id space is about the cheapest reclaim a database can do — no per-row status scan, no random deletes, portable to any store that can express "less than."</p>
+  <p>The whole trick is computing <code>safe_delete_id</code>. In Redis we keep, per connected client, a set of the outbox ids it has been sent but not yet acknowledged. Its <strong>pin</strong> is the <em>minimum</em> of that set. The global safe-delete line is the <strong>minimum pin across all clients</strong>. Nothing at or above the lowest outstanding message may be deleted; everything strictly below it is delivered-and-acknowledged for everyone, and can go.</p>
+  <p>We call the bookkeeping <em>Tetris</em>: rows stack up by id, and the floor rises underneath them as the laggards catch up. A prefix delete against a shared, monotonic id space is about the cheapest reclaim a database can do — no per-row status scan, no random deletes, portable to anything that can express "less than."</p>
 </section>
 
 <figure class="wide reveal">
   <div class="panel">
     <div class="tetris">
-      <div class="mark" style="grid-column:1; font-size:11px; color:var(--faint); writing-mode:vertical-rl; transform:rotate(180deg); justify-self:center">newer&nbsp;ids&nbsp;↑</div>
+      <div style="grid-column:1; font-size:11px; color:var(--faint); writing-mode:vertical-rl; transform:rotate(180deg); justify-self:center; font-family:'IBM Plex Mono',monospace">newer ids ↑</div>
       <div class="tcol" style="grid-column:2">
         <div class="row"><span class="id">#1042</span><span class="who">→ dana &nbsp;<span style="color:var(--faint)">unsent</span></span></div>
         <div class="row pin"><span class="id">#1039</span><span class="who">→ ravi &nbsp;<span style="color:var(--accent-deep)">oldest un-acked · pin</span></span></div>
         <div class="row"><span class="id">#1031</span><span class="who">→ mio &nbsp;<span style="color:var(--faint)">acked</span></span></div>
         <div class="wl"><span>safe_delete_id = 1027</span></div>
-        <div class="row minpin del"><span class="id">#1026</span><span class="who">→ ravi</span></div>
+        <div class="row del"><span class="id">#1026</span><span class="who">→ ravi</span></div>
         <div class="row del"><span class="id">#1019</span><span class="who">→ mio</span></div>
         <div class="row del"><span class="id">#1004</span><span class="who">→ dana</span></div>
       </div>
@@ -304,121 +354,250 @@ DELETE FROM outbox WHERE id &lt; <span class="v">safe_delete_id</span>;</pre>
       <span><i class="i-del"></i>below the line → reclaimed</span>
     </div>
   </div>
-  <figcaption>GC deletes the prefix below the lowest outstanding message. The waterline is a single global minimum.</figcaption>
+  <figcaption><span class="fignum">Fig 3</span> — GC deletes the prefix below the lowest outstanding message.</figcaption>
+</figure>
+
+<section class="wrap">
+  <h3>The pin is contiguous, by construction</h3>
+  <p>One subtlety decides whether this is correct or catastrophic. A client's pin must reflect its <em>lowest un-acknowledged</em> id — not the highest id it happens to have confirmed. If a client is sent 102, 103, 104 and acknowledges 104 while 102 is still outstanding, the pin must stay at <strong>102</strong>. Advancing it to 104 would let GC delete a message the client never received.</p>
+  <p>The implementation makes this structural: a send <em>adds</em> the id to a per-client sorted set; an ACK <em>removes that specific id</em>; the pin is recomputed as the set's minimum each time. It is genuine set membership, not a high-water cursor — so acknowledging out of order can never lift the floor past a gap.</p>
+</section>
+
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="setrow">
+      <div class="setgrp">
+        <div class="chips">
+          <span class="chip pin">102</span><span class="chip">103</span><span class="chip">104</span>
+        </div>
+        <div class="setlbl">pending set — pin = <b>102</b></div>
+      </div>
+      <div class="op">ACK 104<br>(ZREM 104)&nbsp;→</div>
+      <div class="setgrp">
+        <div class="chips">
+          <span class="chip pin">102</span><span class="chip">103</span><span class="chip ack">104</span>
+        </div>
+        <div class="setlbl">pin still <b>102</b> — the gap holds the line</div>
+      </div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 4</span> — out-of-order ACK removes one id; the pin is the set minimum, so it never jumps a gap.</figcaption>
 </figure>
 
 <section class="wrap">
   <p class="pull">One shared minimum is the design's great simplicity — and its one structural weakness.</p>
-  <p>Because <code>safe_delete_id</code> is a <em>single global minimum</em>, a single stuck recipient holds the line down for <strong>everyone</strong>. If one online client stops acknowledging — a dead socket that still looks alive, a device wedged mid-reconnect — its pin freezes, the waterline can't rise, and the outbox grows underneath a floor that won't move. Delivery to every other recipient keeps working; their rows just can't be reclaimed. This is classic head-of-line blocking, and at a shared-id-space scale it is unavoidable by construction.</p>
+  <p>Because <code>safe_delete_id</code> is a <em>single global minimum</em>, a single stuck recipient holds the line down for <strong>everyone</strong>. If one online client stops acknowledging — a dead socket that still looks alive, a device wedged mid-reconnect — its pin freezes, the waterline can't rise, and the outbox grows under a floor that won't move. Delivery to every other recipient keeps working; their rows just can't be reclaimed. This is classic head-of-line blocking, and at a shared-id-space scale it is unavoidable by construction.</p>
 </section>
 
 <section class="wrap">
   <span class="sec-label">04 — The trade-off</span>
   <h2>Reconnect churn vs. outbox volume</h2>
   <p>We could dissolve head-of-line blocking today with clever Postgres — per-row delete-on-ack, an online-gated fetch skip, sharded pin sets. We deliberately don't. Every one of those is throwaway work that a partitioned log makes irrelevant, and each adds a moving part to the exact subsystem we intend to replace. The rule we hold: <strong>keep the reclaim portable — one table, one id space, one sequential delete — and pay elsewhere.</strong></p>
-  <p>Where we pay is a policy at the delivery edge. When a message has been re-delivered more than a small threshold of times without being acknowledged, its recipient is not "briefly behind" — it is the frozen pin holding down the waterline. So we <strong>abandon</strong> it: advance the watermark past it deterministically, and break its socket. The dropped delivery is not lost — it is still in history — and the client recovers it on reconnect (§05). Breaking one stuck socket lets the floor rise for everyone.</p>
+  <p>Where we pay is a policy at the delivery edge. When a message has been re-delivered past a small threshold without being acknowledged, its recipient is not "briefly behind" — it is the frozen pin holding down the waterline. So we <strong>abandon</strong> it. And here is the one point a careful reviewer will stop on: abandoning must not pretend the client acknowledged anything.</p>
+  <p>It doesn't. Abandon <em>removes the client from the live-delivery set entirely</em> — it deletes the client's whole pending set, drops its count, and removes it from the global-minimum structure — then breaks its socket. The waterline is then recomputed over the <em>remaining</em> clients. This is a withdrawal from live delivery, not a forged acknowledgement:</p>
+  <pre class="code"><span class="c"># abandon = onDisconnect(client) — remove, never a fake pin-advance</span>
+redis: <span class="r">DEL</span>  tetris:re:&lt;client&gt;      <span class="c"># the client's whole pending-id set</span>
+redis: <span class="r">HDEL</span> tetris:re:cnt  &lt;client&gt;  <span class="c"># its outstanding count</span>
+redis: <span class="r">ZREM</span> tetris:minids &lt;client&gt;  <span class="c"># its pin leaves the global min</span>
+<span class="c"># safe_delete_id is then re-derived as the MIN over the clients that remain</span></pre>
+  <p>The abandoned client's un-acked rows do become reclaimable — but that is safe, not lossy, because the message still sits in history and the client pulls it on reconnect (§05). Breaking one stuck socket lets the floor rise for everyone.</p>
 
-  <div class="callout">
+  <div class="callout warn">
     <p class="tag">the balance</p>
-    <p>A tighter drop keeps the outbox small but forces more reconnects. A looser drop tolerates a bigger buffer to spare the churn. The lever that sets this balance is the per-message <strong>delivery-attempts</strong> cap, backed by three independent guards that reap unhealthy connections on different signals.</p>
+    <p>A tighter drop keeps the outbox small but forces more reconnects; a looser drop tolerates a bigger buffer to spare the churn. This is the design's central dial, and it is an <strong>anti-stall</strong> lever, not a waterline lever: it doesn't move the floor by acknowledging anything — it removes the stall so the floor can move on its own.</p>
   </div>
+</section>
 
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="ba">
+      <div class="card">
+        <h4>before — stuck client pins the floor</h4>
+        <div class="zline stuck"><span class="sc">1027</span><span class="who">ravi · stuck, 0 ACK</span></div>
+        <div class="zline"><span class="sc">1031</span><span class="who">mio</span></div>
+        <div class="zline"><span class="sc">1039</span><span class="who">dana</span></div>
+        <div class="grew">safe_delete_id = 1027 · outbox grows underneath</div>
+      </div>
+      <div class="op-mid"><b>ZREM ravi</b><br>withdraw from live delivery<br>(not an ACK)</div>
+      <div class="card">
+        <h4>after — floor recomputed over the rest</h4>
+        <div class="zline gone"><span class="sc">1027</span><span class="who">ravi · removed</span></div>
+        <div class="zline newmin"><span class="sc">1031</span><span class="who">mio · new min</span></div>
+        <div class="zline"><span class="sc">1039</span><span class="who">dana</span></div>
+        <div class="grew">safe_delete_id = 1031 · GC drains 1027–1030 · ravi recovers via history</div>
+      </div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 5</span> — abandon lifts the waterline by removing the stall, not by faking an acknowledgement.</figcaption>
+</figure>
+
+<section class="wrap">
   <h3>Three guards, one goal</h3>
+  <p>The abandon is one of three independent reapers, each firing on a different signal:</p>
   <ul class="notes">
     <li><strong>Idle reaper</strong> — closes sockets that stopped answering pings. Signal: silence. It clears zombies.</li>
-    <li><strong>Overload reaper</strong> — drops a client whose un-acknowledged backlog exceeds <code>max-pending</code>. Signal: depth. A count-based guardrail against one client's set growing without bound.</li>
-    <li><strong>Attempts drop</strong> — the primary lever. Abandons the recipient of a message re-delivered past <code>max-delivery-attempts</code>. Signal: staleness of the oldest outstanding row. This is the one that keeps the waterline moving.</li>
+    <li><strong>Overload reaper</strong> — drops a client whose un-acknowledged backlog exceeds <code>max-pending</code>. Signal: depth. A count-based guardrail.</li>
+    <li><strong>Attempts drop</strong> — the primary anti-stall lever. Withdraws the recipient of a message re-delivered past <code>max-delivery-attempts</code>. Signal: staleness of the oldest outstanding row.</li>
   </ul>
-  <p>They run in parallel on different clocks and never conflict; a client can trip two at once and the second drop is simply a no-op. There is no single "client health" controller — three heuristics, each cheap, is enough until the log arrives.</p>
+  <p>They run in parallel on different clocks and never conflict; a client can trip two at once and the second withdrawal is simply a no-op.</p>
 
-  <h3>The grace question</h3>
-  <p>The obvious refinement is a <em>reconnect-grace window</em>: don't abandon a client that only just reconnected — give it a moment to acknowledge the tail before judging it. We built the knob and measured it. Under sustained load it is <strong>counterproductive</strong>: a client that can't keep up now won't keep up in another second either, and the grace window merely delays the inevitable drop while the poller re-delivers its un-acked rows in the meantime — a re-delivery storm that inflates both the buffer and the churn it was meant to reduce.</p>
-  <p>So the grace defaults to <strong>zero</strong>: abandon immediately, recover via history. The knob survives for the case it actually helps — a transient blip at <em>low</em> load, where a healthy client hiccups for under a second and a small grace saves it a needless reconnect. Under saturation, aggression wins, because the recovery path is cheap.</p>
+  <h3>The grace question — measured, not assumed</h3>
+  <p>The obvious refinement is a <em>reconnect-grace window</em>: don't abandon a client that only just reconnected — give it a moment to catch up before judging it. We built the knob and measured it. Under sustained load it is <strong>counter-productive</strong>: a client that can't keep up now won't keep up in another second either, and the grace window merely delays the inevitable withdrawal while the poller re-delivers its un-acked rows in the meantime — a re-delivery storm that inflates both the buffer and the churn it was meant to reduce. So grace defaults to <strong>zero</strong>. The knob survives for the case it actually helps: a transient blip at <em>low</em> load, where a healthy client hiccups for under a second. Under saturation, aggression wins — because the recovery path is cheap.</p>
 </section>
 
 <section class="wrap">
   <span class="sec-label">05 — The guarantee</span>
   <h2>Why dropping a delivery loses nothing</h2>
-  <p>Everything above hinges on one claim: abandoning a delivery is safe. It is safe because of the ordering in §01 and two invariants that never bend.</p>
-  <ul class="notes">
-    <li><strong>Durability is unconditional.</strong> The message is in <code>message_history</code>, written in the same transaction as — and before — its outbox row. No delivery outcome can un-write it.</li>
-    <li><strong>Garbage collection only ever touches the outbox.</strong> The waterline delete, and the age-based backstop, run against the buffer alone. History is aged out by a separate retention clock and nothing else. The two never intersect.</li>
-  </ul>
-  <p>So when the attempts-drop abandons a recipient, the outbox rows it was owed get reclaimed, but the messages themselves sit untouched in history. Recovery is <strong>client-pull, not server-push</strong>: on reconnect the client asks for everything since the last id it saw —</p>
-  <pre class="code">GET /api/chats/{id}/messages?since=<span class="v">&lt;last-seen-id&gt;</span></pre>
-  <p>— and reads it straight from history. The server never has to hold the delivery open, and the buffer is free to drain. This makes the abandon cheap, which is the whole reason we can afford to be aggressive with it. The one contract it imposes: a client <em>must</em> resync on reconnect. Since the attempts-drop deletes the very rows a naive poller would have re-pushed, a client that relies only on live delivery would miss them; the since-cursor sync is what closes the loop.</p>
-  <p>The proof that this is working, at load, is a single number: <strong>deliveries per accepted message ≈ 1.0</strong>. When that ratio climbs toward 2, the system is re-delivering — the waterline is stuck and the poller is churning. Held at 1.0, every message is delivered essentially once, the buffer stays bounded, and reconnects are the honest cost of the clients that genuinely fell behind.</p>
+  <p>Everything above rests on four invariants. Each is enforced by the code, not merely intended — we verified them against the implementation (the transactional SQL, the Redis Lua behind the watermark, the retention config).</p>
 </section>
 
+<figure class="wide reveal">
+  <div class="inv">
+    <div class="invcard">
+      <div class="badge">✓ code-verified</div>
+      <div class="id">I<sub>1</sub></div>
+      <p>Every outbox row has a corresponding durable history record.</p>
+      <p class="basis">History and outbox are inserted in one transaction, history first. No delivery row exists without its record.</p>
+    </div>
+    <div class="invcard">
+      <div class="badge">✓ code-verified</div>
+      <div class="id">I<sub>2</sub></div>
+      <p>An outbox row is reclaimable only after its recipient acknowledged it — or was explicitly removed from live delivery. Never a faked pin-advance.</p>
+      <p class="basis">ACK = remove one id from the pending set. Abandon = DEL / HDEL / ZREM the client. No path advances a pin to a higher score.</p>
+    </div>
+    <div class="invcard">
+      <div class="badge">✓ code-verified</div>
+      <div class="id">I<sub>3</sub></div>
+      <p>Removing a recipient from live delivery never removes the message from history.</p>
+      <p class="basis">Abandon touches only presence + Redis + the offline nudge. Outbox GC deletes only from <code>outbox</code>. History has its own clock.</p>
+    </div>
+    <div class="invcard">
+      <div class="badge">✓ code-verified</div>
+      <div class="id">I<sub>4</sub></div>
+      <p>History retention is longer than the longest window in which a client might need recovery.</p>
+      <p class="basis">History 90 days ≫ outbox backstop 26 hours; frozen contracts 365 days. The recovery window fits comfortably inside history.</p>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 6</span> — the four invariants that make an abandoned delivery safe.</figcaption>
+</figure>
+
 <section class="wrap">
-  <span class="sec-label">06 — The control surface</span>
+  <p>With those, abandoning a recipient is safe by construction. Its outbox rows get reclaimed, but the messages sit untouched in history. Recovery is <strong>client-pull, not server-push</strong>: on reconnect the client asks its conversation for everything since the last id it saw —</p>
+  <pre class="code">GET /api/chats/{chatId}/messages?since=<span class="v">&lt;last-seen-id&gt;</span></pre>
+  <p>The cursor is <strong>scoped to the conversation</strong> and ordered by a server-assigned ULID (monotonic, so lexicographic order is chronological order) — there is no global-cursor ambiguity across conversations. The server never has to hold a delivery open, and the buffer is free to drain. This is what makes the abandon cheap, and cheapness is the whole reason we can afford to be aggressive with it.</p>
+
+  <h3>Offline recipients, said plainly</h3>
+  <p>A pin exists only for a <em>connected</em> client. An offline recipient therefore holds nothing down: its outbox rows become reclaimable and may be garbage-collected while it sleeps. That is intentional. Its delivery state is abandoned exactly like a stuck client's; history is the recovery mechanism. "What stops Bob's outbox rows from vanishing while he's offline for ten hours?" — nothing, and by design. He reads them back from history when he returns, which is why I<sub>4</sub> matters.</p>
+
+  <h3>Duplicates are expected — dedupe by id</h3>
+  <p>At-least-once means a client can legitimately receive the same message twice: once via live push and again via reconnect-sync, or twice from a lease re-claim. Every delivered frame carries a stable server ULID (<code>messageId</code>) plus the sender's original id (<code>correlationId</code>), and the same identifiers appear on the history copy. The client contract is therefore explicit: <strong>deduplicate by <code>messageId</code> across live delivery and history synchronization.</strong> Recovery without dedupe would manufacture the very duplicates it exists to prevent.</p>
+
+  <h3>The one number that proves it's working</h3>
+  <p>Held under load, one ratio tells the whole story: <strong>deliveries per accepted message ≈ 1.0</strong>. When it climbs toward 2, the system is re-delivering — the waterline is stuck and the poller is churning. Held at 1.0, every message is delivered essentially once, the buffer stays bounded, and reconnects are the honest cost of the clients that genuinely fell behind.</p>
+</section>
+
+<figure class="wide reveal">
+  <div class="tiles">
+    <div class="tile star"><div class="m-lab">outbox oldest age ★</div><div class="m-val">30 ms</div><div class="m-hint">the sharpest health signal — depth alone lies</div></div>
+    <div class="tile"><div class="m-lab">deliver / accept</div><div class="m-val">1.00</div><div class="m-hint">&gt;1 means a re-delivery storm</div></div>
+    <div class="tile"><div class="m-lab">outbox depth</div><div class="m-val">~50k</div><div class="m-hint">bounded and draining</div></div>
+    <div class="tile"><div class="m-lab">waterline lag</div><div class="m-val">low</div><div class="m-hint">distance the floor trails the head</div></div>
+    <div class="tile"><div class="m-lab">abandon rate</div><div class="m-val">→0</div><div class="m-hint">spikes = stuck recipients</div></div>
+    <div class="tile"><div class="m-lab">ACK latency p99</div><div class="m-val">≪ lease</div><div class="m-hint">sets a safe claim-lease</div></div>
+  </div>
+  <figcaption><span class="fignum">Fig 7</span> — the operating signals. <code>outbox_oldest_age</code> is the one to alarm on: depth 100k at 30&nbsp;ms is fine; depth 100 at 8&nbsp;minutes is a fire.</figcaption>
+</figure>
+
+<section class="wrap">
+  <span class="sec-label">06 — Retention</span>
+  <h2>History outlives every recovery window</h2>
+  <p>Because an abandoned or offline recipient recovers only from history, one invariant is non-negotiable (I<sub>4</sub>): <strong>history must live longer than the longest time a client could plausibly be away before reconnecting.</strong> Get this wrong — let history expire while an un-delivered outbox row still exists — and a returning client finds nothing. The margin here is deliberately enormous.</p>
+</section>
+
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="timeline">
+      <div class="trow"><div class="lab win">outbox backstop<small>26 h — disk safety net</small></div><div class="bar ob">26h</div></div>
+      <div class="trow"><div class="lab">message history<small>90 days — the recovery window</small></div><div class="bar hist">90 days</div></div>
+      <div class="trow"><div class="lab">frozen contracts<small>365 days — legal retention</small></div><div class="bar frozen">365 days</div></div>
+    </div>
+    <p class="tnote">History (90 d) outlives the outbox backstop (26 h) by ~83×. A client can be gone for weeks and still recover.</p>
+  </div>
+  <figcaption><span class="fignum">Fig 8</span> — retention horizons. The recovery window sits far inside history.</figcaption>
+</figure>
+
+<section class="wrap">
+  <span class="sec-label">07 — The control surface</span>
   <h2>Every queue, and what it is for</h2>
-  <p>Throughput at this shape is not one dial; it is a set of bounded buffers, each protecting a different stage from the one before it. The design keeps them explicit and separately tunable rather than hidden behind a single thread pool.</p>
+  <p>Throughput at this shape is not one dial; it is a set of bounded buffers, each protecting a stage from the one before it. The design keeps them explicit and separately tunable rather than hidden behind a single thread pool.</p>
 </section>
 
 <figure class="wide reveal">
   <div class="tbl-scroll">
     <table>
       <caption>The buffers and batchers of the delivery path (v1.4.6 defaults)</caption>
-      <thead>
-        <tr><th>Buffer / batcher</th><th>Setting</th><th>Job</th></tr>
-      </thead>
+      <thead><tr><th>Buffer / batcher</th><th>Setting</th><th>Job</th></tr></thead>
       <tbody>
-        <tr><td class="k">inbound queue</td><td><span class="num">8000</span></td><td>Backpressure gate on accept. Over the limit, a send is shed as "overloaded" rather than swallowed.</td></tr>
+        <tr><td class="k">inbound queue</td><td><span class="num">8000</span></td><td>Backpressure on accept. Over the limit, a send is shed as "overloaded" rather than swallowed.</td></tr>
         <tr><td class="k">inbound persist-batch</td><td><span class="num">36</span> / 5 ms</td><td>Group-commit: coalesces concurrent history+outbox writes into batched transactions to fill an otherwise idle DB pool.</td></tr>
         <tr class="win"><td class="k">outbound batch-size</td><td><span class="num">6000</span></td><td>Rows the poller claims per poll. Sized to match the inbound gate so delivery is never the narrower pipe.</td></tr>
         <tr class="win"><td class="k">outbound queue-size</td><td><span class="num">8000</span></td><td>Backpressure on delivery; the poller skips fetching while the queue is non-empty.</td></tr>
-        <tr class="win"><td class="k">claim-lease</td><td><span class="num">10 s</span></td><td>Visibility timeout on a claimed row. Too short and the poller re-claims still-acking rows; this is the direct re-delivery lever.</td></tr>
+        <tr class="win"><td class="k">claim-lease</td><td><span class="num">10 s</span></td><td>Visibility timeout on a claimed row — set it well above the P99.9 delivery→ACK latency, or the poller re-claims still-acking rows and manufactures duplicates.</td></tr>
         <tr><td class="k">delivery-concurrency</td><td><span class="num">32</span></td><td>Concurrent WebSocket deliveries, on both the fast path and the poller.</td></tr>
         <tr><td class="k">fast-delivery queue</td><td><span class="num">8000</span></td><td>The live hand-off buffer; sheds to the poller when full.</td></tr>
         <tr><td class="k">read-batch</td><td><span class="num">64</span> / 10 ms</td><td>Group-commit of read receipts — the same coalescing trick, for a lower-value write.</td></tr>
-        <tr><td class="k">offline-push batch</td><td>Kafka</td><td>Coalesces offline-recipient nudges onto a topic for the notifier.</td></tr>
         <tr class="win"><td class="k">max-pending</td><td><span class="num">20</span></td><td>Overload-reaper threshold. Below ~20 it reaps healthy clients and manufactures churn.</td></tr>
-        <tr class="win"><td class="k">max-delivery-attempts</td><td><span class="num">3</span></td><td>The attempts-drop threshold — the primary waterline lever.</td></tr>
-        <tr><td class="k">outbox-retention</td><td><span class="num">26 h</span></td><td>Age-based backstop: a disk safety net if the watermark ever stalls despite the reapers.</td></tr>
+        <tr class="win"><td class="k">max-delivery-attempts</td><td><span class="num">3</span></td><td>The anti-stall threshold — the primary abandon lever.</td></tr>
+        <tr><td class="k">outbox-retention</td><td><span class="num">26 h</span></td><td>Age-based backstop: a disk safety net if the waterline ever stalls despite the reapers.</td></tr>
       </tbody>
     </table>
   </div>
-  <figcaption>Rows highlighted are the values a sustained-2000/s campaign settled on.</figcaption>
+  <figcaption><span class="fignum">Fig 9</span> — highlighted rows are the values a sustained-2000/s campaign settled on.</figcaption>
 </figure>
 
 <section class="wrap">
-  <p>The persist and delivery pools are two separate reactive connection pools over the same Postgres, isolated so a burst of writes can never starve live reads. Each batcher exists to turn many small, latency-bound operations into few throughput-bound ones — the recurring move whenever a database pool would otherwise sit idle waiting on round trips.</p>
-</section>
-
-<section class="wrap">
-  <span class="sec-label">07 — The numbers</span>
+  <span class="sec-label">08 — The numbers</span>
   <h2>What the load campaign settled</h2>
-  <p>The configuration above is not folklore; it is what survived a sweep. Six hundred clients messaging each other pairwise at a sustained two thousand messages a second — well past any real peak — with every knob moved in isolation and the run reconciled message-by-message. The verdict was unusually crisp.</p>
+  <p>The configuration above is not folklore; it is what survived a sweep. Six hundred clients messaging each other pairwise at a sustained two thousand messages a second — well past any real peak — with every knob moved in isolation and the run reconciled message-by-message.</p>
   <div class="tbl-scroll">
     <table>
       <caption>Sustained 2000 msg/s · 600 clients · deliveries-per-message and buffer behavior</caption>
-      <thead>
-        <tr><th>Configuration</th><th>deliver / send</th><th>outbox</th><th>verdict</th></tr>
-      </thead>
+      <thead><tr><th>Configuration</th><th>deliver / send</th><th>outbox</th><th>verdict</th></tr></thead>
       <tbody>
         <tr class="win"><td class="k">grace 0 · pending 20 · lease 10s</td><td><span class="num">1.00</span></td><td>bounded, drains to 0</td><td>holds 2000 one-to-one</td></tr>
-        <tr><td class="k">grace 0 · pending 20 · lease 20s</td><td><span class="num">1.56</span></td><td>≈165k, poor drain</td><td>longer lease re-delivers</td></tr>
+        <tr><td class="k">grace 0 · pending 20 · lease 20s</td><td><span class="num">1.56</span></td><td>≈165k, poor drain</td><td>lease too long → re-claims</td></tr>
         <tr><td class="k">grace 1s · pending 20 · lease 10s</td><td><span class="num">~1</span></td><td>bounded</td><td>more reconnects</td></tr>
         <tr><td class="k">grace 3s · pending 9 · lease 20s</td><td><span class="num">2–4</span></td><td>≈162k, no drain</td><td>storm</td></tr>
         <tr><td class="k">grace 10s</td><td><span class="num">2.96</span></td><td>unbounded → 355k</td><td>collapse</td></tr>
       </tbody>
     </table>
   </div>
-  <p>Read top to bottom, it is the same lesson each time: anything that <em>delays</em> the drop — grace above zero, a lease longer than the GC cadence, a pending cap so low it reaps the healthy — trades a bounded buffer and a 1.0 delivery ratio for a re-delivery storm. The aggressive, immediate drop is not a compromise; it is the optimum.</p>
+  <p>The lesson repeats down the table: anything that <em>delays</em> the abandon — grace above zero, a lease longer than the GC cadence, a pending cap so low it reaps the healthy — trades a bounded buffer and a 1.0 ratio for a re-delivery storm. One honest caveat: the lease result is empirical, not a law. The principle is <em>lease ≫ P99.9 delivery-to-ACK latency</em>; at our latencies 10&nbsp;s satisfied that and 20&nbsp;s interacted badly with the GC cadence — measure your own percentiles before copying the number.</p>
 </section>
 
 <section class="wrap">
-  <span class="sec-label">08 — The horizon</span>
+  <span class="sec-label">09 — The horizon</span>
   <h2>A rehearsal for the log</h2>
-  <p>Every decision here was made with one eye on the thing we haven't built yet. The outbox is a partitioned log drawn in a relational table; the <code>BIGSERIAL</code> is an offset; the Tetris watermark is a consumer's committed position. When the messenger moves onto Kafka, the mapping is nearly mechanical:</p>
-  <ul class="notes">
-    <li>The shared outbox becomes a topic <strong>partitioned by recipient</strong> — so each key's progress is independent and there is no single cross-key minimum to freeze.</li>
-    <li>The global watermark becomes a <strong>per-partition committed offset</strong>. Reclaim stops being a delete gated on the slowest consumer and becomes time-and-size <em>retention</em>, decoupled from consumption entirely — a laggard can no longer hold anyone's floor down.</li>
-    <li><code>message_history</code> does not move. It is already the durable truth; the log only ever replaced the <em>buffer</em>.</li>
-  </ul>
-  <p>At that point the head-of-line block dissolves for free, the attempts-drop becomes a <code>seek()</code> instead of a broken socket, and the reconnect churn we pay today disappears — because a slow consumer resumes from its offset rather than being dropped and told to resync. The single global minimum, the one weakness, is the exact thing the partitioned log is designed to remove.</p>
-  <p class="pull">Until then, we keep the buffer honest: one table, one waterline, an aggressive drop, and a durable history to fall back on.</p>
+  <p>Every decision here was made with one eye on the thing we haven't built yet. The outbox is a partitioned log drawn in a relational table; the <code>BIGSERIAL</code> is an offset; the Tetris waterline is a consumer's committed position.</p>
+</section>
+
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="kmap">
+      <div class="krow"><div class="now">shared outbox table</div><div class="ar">→</div><div class="to">topic partitioned by recipient</div></div>
+      <div class="krow"><div class="now">global safe-delete minimum</div><div class="ar">→</div><div class="to">per-partition committed offset</div></div>
+      <div class="krow"><div class="now">delete gated on the slowest consumer</div><div class="ar">→</div><div class="to">time/size retention, decoupled from consumption</div></div>
+      <div class="krow"><div class="now">abandon = break the socket</div><div class="ar">→</div><div class="to">laggard seek()s its offset</div></div>
+      <div class="krow"><div class="now">message_history</div><div class="ar">→</div><div class="to">unchanged — still the durable truth</div></div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 10</span> — the outbox maps onto a partitioned log; history does not move.</figcaption>
+</figure>
+
+<section class="wrap">
+  <p>At that point the head-of-line block dissolves for free: with per-partition offsets there is no single cross-key minimum to freeze, and a laggard can no longer hold anyone's floor down. The reconnect churn we pay today disappears too — a slow consumer resumes from its offset rather than being dropped and told to resync.</p>
+  <p>But we are careful about the word "mechanical." The <strong>semantic</strong> mapping is close to mechanical — the roles line up almost one to one. The <strong>operational</strong> model is not: producer idempotence, transactional writes, partition count and hot recipients, consumer-group rebalance, offset-commit ordering, a consumer crash between processing and commit. The model transfers cleanly; the operations are a project of their own.</p>
+  <p class="pull">Until then, we keep the buffer honest: one table, one waterline, an aggressive abandon, and a durable history to fall back on.</p>
 </section>
 
 </main>
@@ -426,7 +605,7 @@ DELETE FROM outbox WHERE id &lt; <span class="v">safe_delete_id</span>;</pre>
 <footer>
   <div class="wrap">
     <span>Hormigas Messenger — delivery substrate v1.4.6</span>
-    <span>Postgres outbox · Redis watermark · Kafka-bound</span>
+    <span>Postgres outbox · Redis waterline · Kafka-bound</span>
   </div>
 </footer>
 
@@ -445,7 +624,7 @@ DELETE FROM outbox WHERE id &lt; <span class="v">safe_delete_id</span>;</pre>
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
     var obs=new IntersectionObserver(function(es){
       es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); obs.unobserve(en.target);} });
-    },{threshold:.12});
+    },{threshold:.1});
     document.querySelectorAll(".reveal").forEach(function(el){ obs.observe(el); });
   }
 })();
