@@ -249,18 +249,33 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
 <div class="wrap">
   <div class="abstract reveal">
     <p class="tag">Abstract</p>
-    <p>A one-to-one chat owes an <strong>at-least-once</strong> contract: every accepted message must reach its recipient, even across dropped sockets and hours offline. We honor it with two Postgres stores — a durable <code>message_history</code> and a transient per-recipient <code>outbox</code> — coordinated by a single Redis "waterline" and drained by a fleet of bounded batchers. The counter-intuitive core: because history is the truth, the system can <em>abandon</em> a stuck delivery outright and let the client recover it on reconnect. This paper documents the mechanism, the four invariants that make it safe (each verified against the code), the single global-minimum trade-off that shapes everything, the load numbers that settled the configuration at 2000 msg/s, and why the whole design is a deliberate rehearsal for Kafka.</p>
+    <p>Building a compact, fast messenger for small projects is not the trivial task it looks. The bar pulls on every axis at once: a real delivery <strong>guarantee</strong>; throughput near <strong>2000 messages a second</strong>; <strong>thousands</strong> of connected clients and <strong>hundreds of groups</strong>; and an instance that never outgrows <strong>1–2 GB</strong> of memory. At the centre sits an <strong>outbox</strong> — one that must run equally on Kafka or on a relational database, be transactionally bound to a durable history, and feed delivery from it. Because the target is deliberately small, the compromises begin there, and they are what this paper is really about: an outbox kept universal by forbidding random reads and using only <em>linear</em> scans (so the backing store can be swapped, Kafka ↔ database, per deployment); and a client made part of the bargain — bounded by credits and request rates, and disconnected outright when it stops acknowledging, at which point the contract obliges it to re-read history on reconnect and deduplicate on its own side. It works — and the thin line between reconnecting clients too eagerly and letting the outbox bloat is the genuinely non-trivial part, tuned to the network, the latency and the business, but a healthy compromise overall. Below: how it works, the <strong>Tetris</strong> algorithm we built to reclaim the outbox (storage-agnostic — Kafka or database alike), and then the design in full.</p>
   </div>
 </div>
 
 <section class="wrap">
-  <p class="lead">A one-to-one chat looks trivial until you count what has to survive a dropped socket. A message accepted from a sender must reach its recipient <em>eventually</em> — even if that recipient is asleep, offline, on a train, or reconnecting three times a minute.</p>
-  <p>The honest way to state the guarantee is in two clauses, because they are different promises:</p>
+  <span class="sec-label">00 — the brief</span>
+  <h2>A small messenger is a hard messenger</h2>
+  <p class="lead">A chat backend for a small project looks trivial until you count what has to hold at once. The requirements pull against each other:</p>
+  <ul class="notes">
+    <li><strong>A real delivery guarantee</strong> — no accepted message may be silently lost.</li>
+    <li><strong>Throughput ≈ 2000 messages/second</strong> — comfortably past any small-project peak.</li>
+    <li><strong>Scale in the small</strong> — thousands of connected clients, hundreds of groups.</li>
+    <li><strong>A tiny footprint</strong> — an instance that never outgrows 1–2 GB of memory.</li>
+  </ul>
+  <p>The heart of a design that can meet all four is an <strong>outbox</strong>: a delivery buffer that runs equally on Kafka or on a relational database, is <strong>transactionally bound to a durable history</strong>, and feeds delivery from it. But precisely because the target is small, the compromises start at the outbox — and the compromises are the interesting part.</p>
+  <p><strong>Universality forces a shape.</strong> To keep one design portable between Kafka and a database, the outbox forbids random reads and uses only <em>linear</em> scans — so the backing store can be swapped, Kafka ↔ database, to suit a deployment without rewriting the logic. That single constraint — realized by the Tetris reclaim below — is what makes the substrate a drop-in either way.</p>
+  <p><strong>The client is part of the bargain.</strong> The last piece of the compromise is the client itself: bounded by credits and request rates, and — more importantly — disconnected outright when it stops acknowledging (too long, too much, no pings). On reconnect the contract obliges it to <strong>re-read history and deduplicate on its own side</strong>. And it works.</p>
+  <p>The genuinely non-trivial part is the <strong>thin line</strong> between reconnecting clients too eagerly and letting the outbox bloat — a balance struck against the network environment, the latency and the specific business conditions, but a healthy compromise overall. Below we describe how it works — the two stores, the delivery paths, and the <strong>Tetris algorithm we built to reclaim the outbox</strong>, storage-agnostic across Kafka or a database — and then the design in full.</p>
+</section>
+
+<section class="wrap">
+  <p>First, the guarantee stated precisely — in two clauses, because they are different promises:</p>
   <ul class="notes">
     <li><strong>At-least-once <em>live</em> delivery</strong> — while a recipient is connected, the system keeps pushing a message to its socket until acknowledged.</li>
-    <li><strong>Durable eventual recovery</strong> — if live delivery is given up on, the message is not lost; it remains in durable history and the client pulls it on the next reconnect.</li>
+    <li><strong>Durable eventual recovery</strong> — if live delivery is given up on, the message is not lost; it stays in durable history and the client pulls it on the next reconnect (within the retention window).</li>
   </ul>
-  <p>That distinction is not pedantry — it is the whole design. Live push is best-effort and abandonable; the durable record is what actually guarantees the message. Everything below follows from putting those two responsibilities in two different places.</p>
+  <p>That distinction is not pedantry — it is the whole design. Live push is best-effort and abandonable; the durable record is what actually guarantees the message. Everything that follows comes from putting those two responsibilities in two different places.</p>
 </section>
 
 <section class="wrap">
