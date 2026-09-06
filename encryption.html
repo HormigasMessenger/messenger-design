@@ -1,0 +1,440 @@
+<title>The Message Only Two Devices Can Read</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,320;0,6..72,440;0,6..72,560;1,6..72,380;1,6..72,440&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#F1F4F3; --surface:#FFFFFF; --surface-2:#F6F9F8;
+  --ink:#13201F; --muted:#566765; --faint:#7E8F8D;
+  --accent:#0E7C7B; --accent-deep:#0A5250; --accent-soft:#DCEEEC;
+  --amber:#A9600F; --amber-soft:#F4E8D6; --amber-line:#C67A1E;
+  --good:#0E7C5A; --good-soft:#D9EEE4;
+  --crit:#B0322A; --crit-soft:#F6E3E1; --crit-line:#C24A40;
+  --hair:#D8E2E0; --hair-strong:#C3D2D0;
+  --code-bg:#F2F6F5; --code-ink:#15302E;
+  --shadow:0 1px 2px rgba(19,32,31,.05), 0 8px 30px rgba(19,32,31,.06);
+  --measure:70ch; --wide:1120px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+    --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+    --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+    --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+    --good:#3FBF8C; --good-soft:#12281F;
+    --crit:#E8746B; --crit-soft:#2A1512; --crit-line:#E8746B;
+    --hair:#21302E; --hair-strong:#2C403D;
+    --code-bg:#0E1A19; --code-ink:#CFE3E0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+  --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+  --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+  --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+  --good:#3FBF8C; --good-soft:#12281F;
+  --crit:#E8746B; --crit-soft:#2A1512; --crit-line:#E8746B;
+  --hair:#21302E; --hair-strong:#2C403D;
+  --code-bg:#0E1A19; --code-ink:#CFE3E0;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif; font-size:18px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility}
+.wrap{max-width:var(--measure); margin:0 auto; padding:0 24px}
+.bleed{max-width:var(--wide); margin:0 auto; padding:0 24px}
+header.top{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--ground) 86%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--hair)}
+.top-in{max-width:var(--wide); margin:0 auto; padding:14px 24px; display:flex; align-items:baseline; justify-content:space-between; gap:16px}
+.brand{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.brand b{color:var(--accent); font-weight:500}
+.toggle{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:none; border:1px solid var(--hair-strong); border-radius:999px; padding:6px 12px; cursor:pointer}
+.toggle:hover{color:var(--ink); border-color:var(--accent)}
+.toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.hero{padding:76px 0 24px}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 22px}
+h1{font-family:"Newsreader",Georgia,serif; font-weight:440; font-size:clamp(2.7rem,6.4vw,4.9rem); line-height:1.0; letter-spacing:-.015em; margin:0; text-wrap:balance; color:var(--ink)}
+h1 em{font-style:italic; color:var(--accent-deep)}
+.dek{font-family:"Newsreader",Georgia,serif; font-weight:380; font-style:italic; font-size:clamp(1.25rem,2.5vw,1.62rem); line-height:1.42; color:var(--muted); margin:26px 0 0; max-width:42ch; text-wrap:balance}
+.byline{margin-top:28px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.05em; color:var(--faint); display:flex; flex-wrap:wrap; gap:8px 18px}
+.waterline{height:2px; background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 88%,transparent); margin:0; border:0; opacity:.85; position:relative}
+.waterline::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+main{padding:14px 0 40px}
+section{padding:40px 0}
+.abstract{background:var(--surface); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:12px; padding:24px 26px; margin:34px 0 8px; box-shadow:var(--shadow)}
+.abstract .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+.abstract p{margin:8px 0; font-size:1.02rem}
+.sec-label{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:14px}
+h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.7rem,3.4vw,2.35rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+h3{font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:1.12rem; margin:32px 0 6px}
+p{margin:16px 0}
+.lead{font-size:1.18rem; line-height:1.6}
+a{color:var(--accent-deep); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
+strong{font-weight:600; color:var(--ink)}
+code{font-family:"IBM Plex Mono",monospace; font-size:.85em; background:var(--code-bg); color:var(--code-ink); padding:.12em .38em; border-radius:4px; border:1px solid var(--hair)}
+ul.notes{list-style:none; padding:0; margin:18px 0; display:flex; flex-direction:column; gap:12px}
+ul.notes li{padding-left:26px; position:relative}
+ul.notes li::before{content:""; position:absolute; left:2px; top:.72em; width:9px; height:2px; background:var(--accent)}
+.pull{border-left:2px solid var(--accent); padding:6px 0 6px 26px; margin:36px 0; font-family:"Newsreader",Georgia,serif; font-style:italic; font-weight:380; font-size:clamp(1.35rem,3vw,1.7rem); line-height:1.32; color:var(--ink); text-wrap:balance}
+.callout{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:20px 22px; margin:26px 0; box-shadow:var(--shadow)}
+.callout .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 8px}
+.callout.warn .tag{color:var(--amber)} .callout.warn{border-left:3px solid var(--amber-line)}
+.callout.crit .tag{color:var(--crit)} .callout.crit{border-left:3px solid var(--crit-line)}
+.callout p{margin:6px 0}
+pre.code{background:var(--code-bg); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:16px 18px; margin:22px 0; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--code-ink)}
+pre.code .c{color:var(--faint)} pre.code .v{color:var(--accent-deep); font-weight:500} pre.code .r{color:var(--amber)}
+figure{margin:34px 0}
+figure.wide{max-width:var(--wide); margin-left:calc(50% - min(50vw,var(--wide)/2)); margin-right:auto; padding:0 24px}
+figcaption{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-top:14px; text-align:center}
+.panel{background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:30px; box-shadow:var(--shadow)}
+.fignum{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:500}
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:10px}
+.stage{flex:1 1 130px; min-width:120px; background:var(--surface-2); border:1px solid var(--hair); border-radius:10px; padding:13px 14px}
+.stage .n{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--accent-deep)}
+.stage .t{font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4}
+.arrow{align-self:center; color:var(--faint); font-size:16px; flex:0 0 auto}
+.store{border-radius:9px; padding:14px; border:1px solid var(--hair); background:var(--surface-2)}
+.store.keep{background:var(--good-soft); border-color:color-mix(in srgb,var(--good) 35%,var(--hair))}
+.store.leave{background:var(--accent-soft)}
+.store .nm{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--ink)}
+.store .desc{font-size:13.5px; color:var(--muted); margin-top:4px; line-height:1.45}
+.store .role{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; margin-top:9px}
+.store.keep .role{color:var(--good)} .store.leave .role{color:var(--accent-deep)}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.states{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:13px}
+.st{padding:8px 12px; border-radius:8px; border:1px solid var(--hair); background:var(--surface-2)}
+.st.wait{border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber)}
+.st.ok{border-color:var(--good); background:var(--good-soft); color:var(--good)}
+.st.lost{border-color:var(--crit-line); background:var(--crit-soft); color:var(--crit)}
+.timeline{display:flex; flex-direction:column; gap:14px; font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+.trow{display:grid; grid-template-columns:160px 1fr; gap:14px; align-items:center}
+.trow .lab{color:var(--ink)} .trow .lab small{display:block; color:var(--faint); font-size:11px}
+.bar{height:26px; border-radius:6px; display:flex; align-items:center; padding:0 12px; color:#fff; font-size:11.5px; white-space:nowrap}
+.bar.a{background:var(--amber-line); width:14%} .bar.b{background:var(--accent); width:100%}
+.inv{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px}
+.invcard{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); position:relative}
+.invcard .id{font-family:"Newsreader",serif; font-style:italic; font-size:1.5rem; color:var(--accent-deep); line-height:1}
+.invcard .badge{position:absolute; top:16px; right:18px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--good); background:var(--good-soft); border:1px solid color-mix(in srgb,var(--good) 40%, transparent); border-radius:999px; padding:3px 9px}
+.invcard p{margin:10px 0 0; font-size:15px; line-height:1.5}
+.invcard .basis{margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--faint); line-height:1.5}
+.tbl-scroll{overflow-x:auto; margin:24px 0}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:560px}
+caption{caption-side:top; text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-bottom:12px}
+th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--hair); vertical-align:top}
+thead th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; border-bottom:1px solid var(--hair-strong)}
+td.k{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); white-space:nowrap}
+td .num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink)}
+tbody tr:hover{background:var(--surface-2)}
+footer{border-top:1px solid var(--hair); margin-top:30px; padding:34px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px}
+@media (max-width:720px){ body{font-size:17px} .grid2{grid-template-columns:1fr} .trow{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:no-preference){
+  .reveal{opacity:0; transform:translateY(10px); transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1; transform:none}
+}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Hormigas · <b>Messenger</b> · an encryption whitepaper</div>
+    <button class="toggle" id="tg" aria-label="Toggle color theme">Theme</button>
+  </div>
+</header>
+
+<div class="bleed hero">
+  <p class="kicker">A closed-chat encryption whitepaper</p>
+  <h1>The message only <em>two devices</em> can read</h1>
+  <p class="dek">Signal-grade end-to-end encryption inside a web PWA — laid on top of a messenger whose delivery guarantee is history and re-sync. Reconciling a ratchet that spends each key once with a transport that delivers the same message twice.</p>
+  <div class="byline">
+    <span>Hormigas Messenger</span><span>·</span>
+    <span>X3DH + Double Ratchet</span><span>·</span>
+    <span>opt-in 1:1</span><span>·</span>
+    <span>companion to <a href="./">“The message you can afford to drop”</a></span>
+  </div>
+</div>
+<div class="bleed"><hr class="waterline"></div>
+
+<main>
+
+<div class="wrap">
+  <div class="abstract reveal">
+    <p class="tag">Abstract</p>
+    <p>This is a companion paper to the messenger's delivery design. That system's guarantee is deliberately not "every message arrives live": it is <strong>durable acceptance plus recovery</strong> — a message is written to history, live push is best-effort and <em>abandonable</em>, and a client that misses a push <strong>re-reads history on reconnect</strong>. That model is the ground this encryption stands on, and it is also the source of the one genuinely hard problem. We add <strong>end-to-end encryption</strong> the way the web platform practically allows: the Signal protocol — X3DH to start a session offline, the <strong>Double Ratchet</strong> to give every message its own key with forward secrecy. But the Double Ratchet <em>consumes a message key on first decrypt and deletes it</em>, while the transport underneath delivers the same ciphertext by more than one path — live socket, history pull, a forced reconnect-resync. A message decrypted once can arrive again undecryptable; a message never delivered leaves a permanent hole. We resolve it in three moves: <strong>decrypt-once and re-wrap at rest</strong> under a device key, so reloaded history reads without re-running the ratchet; <strong>ratchet-decrypt from history</strong> for messages that were only ever delivered offline; and a <strong>client-to-client recovery</strong> protocol that repairs a genuine gap by asking the original sender to re-encrypt from their own copy — recovering the <em>plaintext</em>, never a key, so forward secrecy holds. MITM is closed the only way it can be: <strong>safety numbers</strong>, compared out of band. At the end we name what a PWA still cannot promise.</p>
+  </div>
+</div>
+
+<section class="wrap">
+  <span class="sec-label">00 — the brief</span>
+  <h2>End-to-end, in a browser tab</h2>
+  <p class="lead">A secret chat here is opt-in and one-to-one. Turning it on must hold several promises at once, and two of them are in tension:</p>
+  <ul class="notes">
+    <li><strong>The server reads nothing.</strong> Plaintext, private keys, and session state never leave the two devices. The backend relays opaque bytes on the same path it relays calls.</li>
+    <li><strong>Forward secrecy.</strong> Compromising a device today must not decrypt yesterday's messages — every message has its own key, deleted after use.</li>
+    <li><strong>It survives the transport.</strong> The messenger delivers by live socket <em>or</em> history <em>or</em> a forced resync (see the delivery paper). Encryption cannot assume a message arrives exactly once.</li>
+    <li><strong>History is readable after reload</strong> — even though the per-message keys are gone.</li>
+    <li><strong>MITM is detectable</strong> — the key directory is trusted, and trust must be verifiable by a human.</li>
+  </ul>
+  <p>And the platform is a <strong>web app</strong>, not a native one — no secure enclave, no OS keystore. That ceiling is real and we return to it at the end. Everything between here and there is how far a PWA can actually go.</p>
+  <p class="pull">The delivery layer promises durable acceptance and recovery, not exactly-once. Encryption has to be honest about the same thing.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">01 — the keys</span>
+  <h2>Six kinds of key, one that never leaves</h2>
+  <p>Every key is generated on the device. Only the <em>public</em> half of the long-lived ones is ever published — to a standalone <code>key-directory</code> service that stores public keys and does no cryptography. Everything private is wrapped at rest under a single non-extractable device key.</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>The key inventory — what each is for, how long it lives, where it is stored.</caption>
+      <thead><tr><th>Key</th><th>For</th><th>Lifetime</th><th>Stored</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Identity key</td><td>The device's stable cryptographic identity; basis of the <strong>safety number</strong>; anchors every handshake.</td><td class="num">permanent<br>(per device)</td><td>IndexedDB — private wrapped; public → directory</td></tr>
+        <tr><td class="k">Signed prekey</td><td>Lets a peer start a session <strong>offline</strong>. Signed by the identity key.</td><td class="num">rotated</td><td>IndexedDB wrapped; public+sig → directory</td></tr>
+        <tr><td class="k">One-time prekeys</td><td>Consumed one per new session for extra forward secrecy on message #1.</td><td class="num">single use</td><td>IndexedDB wrapped; publics → directory pool</td></tr>
+        <tr><td class="k">Root / chain keys</td><td>The evolving Double Ratchet state per (conversation × peer device). Gives forward secrecy.</td><td class="num">evolves<br>per message</td><td>IndexedDB — session record, wrapped</td></tr>
+        <tr><td class="k">Message keys</td><td>Encrypt exactly one message, then <strong>deleted</strong> — so a message can't be re-decrypted later.</td><td class="num">one message</td><td>transient (skipped-keys briefly held)</td></tr>
+        <tr class="win"><td class="k">Device key</td><td><strong>The one that never leaves.</strong> A non-extractable AES-GCM key that wraps every private key <em>and</em> the stored plaintext of decrypted messages.</td><td class="num">permanent</td><td>IndexedDB — non-extractable CryptoKey</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The server sees only the middle-column publics. The device key is the hinge of the whole at-rest story below — and, as §10 shows, the thing whose loss you feel most.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">02 — the handshake</span>
+  <h2>X3DH — starting a session with an offline peer</h2>
+  <p>To message someone the first time, you don't need them online. You fetch their <em>prekey bundle</em> from the directory — identity key, signed prekey (+signature), and one one-time prekey it hands out and deletes — and run <strong>X3DH</strong>: a set of Diffie-Hellman agreements that mixes those keys with your own into a shared secret, seeding the first ratchet state. The first message you send carries the signal the peer needs to build their half. No round-trip, no both-online requirement.</p>
+  <div class="callout">
+    <p class="tag">the one precondition</p>
+    <p>Both parties must have <strong>published keys once</strong> — i.e. opened the app since encryption shipped. A peer with no keys can't be X3DH'd, and the UI says exactly that ("this contact hasn't enabled secret chat yet") rather than failing vaguely. Fetching a bundle consumes a one-time prekey, so we only fetch for a device we don't already have a session with.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">03 — the ratchet</span>
+  <h2>The Double Ratchet, and the key it spends</h2>
+  <p>Once a session exists, every message is encrypted with a <strong>fresh key derived one step down a chain</strong>. Two ratchets turn: a symmetric one that advances per message, and a Diffie-Hellman one that turns whenever a reply arrives, re-seeding the chain from new key material. The property that matters here is blunt:</p>
+  <p class="pull">A message key is derived, used once, and deleted. There is no way to derive it again.</p>
+  <p>That is <strong>forward secrecy</strong>: steal the device tomorrow and yesterday's keys are already gone, so yesterday's ciphertext stays shut. Out-of-order delivery is handled by <em>skipped-message-keys</em> — receive #5 before #3 and the library derives and stores the keys for #3 and #4 until they arrive, bounded by a <code>MAX_SKIP</code> cap so a huge jump can't force unbounded work. All of this is standard Signal, and it is exactly what collides with the transport.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">04 — the collision</span>
+  <h2>A ratchet that spends once, a transport that delivers twice</h2>
+  <p>The delivery paper is explicit that the same message can legitimately reach a client <strong>more than once</strong> — a live push and then a reconnect-sync, or a re-claimed lease — and that a message can also be <em>abandoned</em> from live delivery and recovered only later by a history pull. For a plaintext chat that is harmless: you dedupe by id and move on. For a ratchet it is a landmine:</p>
+  <ul class="notes">
+    <li><strong>Decrypt-once vs. deliver-twice.</strong> The first delivery consumes the message key. The second copy — from history, from a resync — is now undecryptable, because the key that would open it no longer exists.</li>
+    <li><strong>A wide gap stalls the chain — a single miss does not.</strong> One missing message is fine: the ratchet stores a skipped-message-key and keeps going, holding a slot for the straggler. But a <em>contiguous</em> gap wider than <code>MAX_SKIP</code> leaves the receiver unable to advance at all — bridging to the next message would exceed the skip budget. That stall, not a lone hole, is the state recovery must repair.</li>
+    <li><strong>Offline delivery is history, not live.</strong> A message received while you were offline arrives <em>only</em> via the history pull — never as a live frame — so a naive "decrypt live frames" design never decrypts it at all.</li>
+  </ul>
+  <p>None of this is a bug in the ratchet or in the transport. It is what happens when you put forward secrecy on top of a delivery model built to drop and recover. Three moves address it — and the third has a sharp constraint the naive version gets wrong.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">05 — move one</span>
+  <h2>Decrypt once, then keep the plaintext — sealed</h2>
+  <p>Because a ratchet key can't be re-derived, "decrypt on every render" is impossible. So we decrypt <strong>exactly once</strong> — the moment a message is received (or the moment we send it) — and immediately re-encrypt that plaintext under the <em>device key</em> and store it, keyed by message id. Reloaded history renders from this store with a cheap symmetric decrypt that has no ordering and no forward-secrecy constraint. The ratchet only ever sees a live, first-time message; it never re-sees history.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="flow">
+      <div class="stage"><div class="n">ciphertext in</div><div class="t">opaque envelope on the wire</div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="n">ratchet · once</div><div class="t">message key derived, used, deleted</div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="n">re-wrap</div><div class="t">encrypt plaintext under the device key</div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="n">store</div><div class="t">IndexedDB, keyed by message id + chat</div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="n">render</div><div class="t">symmetric decrypt — any time, any order</div></div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 1</span> — the ratchet runs once; everything after reads the device-key-sealed copy.</figcaption>
+</figure>
+<section class="wrap">
+  <p>There is a second move hidden in the same place. When history loads a secret message we've <em>never</em> decrypted — the offline case, delivered only by the pull — we run the ratchet <strong>then</strong>. History is fetched in the transport's durable order, but which key opens a message is governed <em>only</em> by the ratchet header and session state, never by that ordering — the two order-spaces are separate, and conflating them is a bug. Our own sent messages can't be ratchet-read (their envelope is encrypted to the peer, not to us), which is exactly why we stash our own plaintext at send time.</p>
+  <div class="callout">
+    <p class="tag">the atomicity invariant</p>
+    <p>"Decrypt once" is not a guarantee the algorithm gives — a crash between advancing the ratchet and persisting the plaintext could spend a key with nothing to show for it. So it is an <strong>invariant the implementation must enforce</strong>, not a property assumed: <em>a message counts as consumed only when its sealed plaintext, its dedup record, and the resulting ratchet state are durably committed together</em> — one IndexedDB transaction, or none. The honest phrasing is not "decrypted exactly once" but <strong>an effectively-once durable result</strong>: each ciphertext is ratchet-decrypted at most once per durable message identity, and dedup is itself persisted so a replay after reload can never reach the ratchet.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">06 — move three</span>
+  <h2>Recovery must be orthogonal to the broken ratchet</h2>
+  <p>The hard residue is a message genuinely lost to the ratchet: a contiguous gap wide enough to <em>stall</em> the receive chain. Forward secrecy forbids recovering the key, so we recover the <strong>plaintext</strong> from the one party who still has it — the original sender, who stashed what they sent (§5). But here is the constraint the naive design gets wrong, and a reviewer was right to flag it:</p>
+  <p class="pull">Re-encrypting the recovered plaintext as <em>another message in the same ratchet</em> does not repair a stall — it lands past the same gap the receiver cannot cross.</p>
+  <p>If the receive chain is stalled at a gap beyond <code>MAX_SKIP</code>, a recovery message sent as the next message <em>in that chain</em> is only reachable after the same un-crossable gap. So recovery must not ride the broken chain. It must be <strong>orthogonal</strong>: the recovered payload is delivered over a <em>fresh</em> session, independent of the stalled one — the sender fetches the receiver's current prekey bundle and runs a new handshake dedicated to the repair, so its ciphertext derives from new key material, not the poisoned receive chain.</p>
+  <pre class="code"><span class="c"># B finds history secret messages it cannot decrypt (stalled chain) →</span>
+B → A   recover-req { conversationId, messageIds:[<span class="v">…</span>], recoverySessionId }  <span class="c"># authenticated; ids are ULIDs</span>
+A       look up OWN stored plaintext by messageId (≤ retention); authorize each
+A       FRESH X3DH/PQXDH → new session to B  (NOT the stalled chain)
+A → B   recover-resp { items:[{ messageId, <span class="v">env</span> }] }   <span class="c"># env AEAD-bound to the fields below</span>
+B       verify AD, decrypt, store under the ORIGINAL messageId, splice in place</pre>
+  <p>The recovered ciphertext is <strong>cryptographically bound</strong>, in its AEAD associated data, to exactly what it claims to be — so a tampered response can't relabel one message as another:</p>
+  <pre class="code">AD = protocolVersion ‖ conversationId ‖ senderIdentityKey ‖ receiverIdentityKey ‖ originalMessageId ‖ recoverySessionId</pre>
+  <p>Two more properties the request must carry, because the ids are authenticated but not secret. The request is honored only over an <strong>authenticated session</strong>, only for messages that belong to this conversation and were authored by the requester's peer, and under a <strong>rate + batch limit</strong> — otherwise a flood of ids is a decrypt-and-encrypt <em>oracle</em>, a cheap DoS. The correlation id is a <strong>ULID</strong> minted by the sender: globally unique, immutable, and itself authenticated inside the message's AD, so both sides name the same message unambiguously.</p>
+  <p>Because we recover plaintext and not a key, <strong>protocol forward secrecy is untouched</strong> — a later device compromise still can't reach a deleted message key. Recovery works only while the sender still holds the plaintext (a retention window, §8); past that, "lost" is honest and permanent. And note the sharper case: after an <em>eviction</em> the receiver's identity itself is gone, so recovery is not just message recovery but <strong>session re-establishment</strong> — another reason the repair path is its own protocol, not a message on an old chain. 1:1 only; groups and attachments are future work.</p>
+  <div class="callout warn">
+    <p class="tag">implementation note — honest status</p>
+    <p>The shipped v1 does the plaintext-recovery idea but currently re-encrypts over the <em>existing</em> session — so it repairs the common small-gap case (where the chain never actually stalled) and <em>fails</em> the true &gt;<code>MAX_SKIP</code> stall. Moving recovery onto a fresh, orthogonal session (and adding the AD binding above) is the priority fix before recovery is relied upon. Named here rather than hidden.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">07 — order &amp; identity</span>
+  <h2>Sorting, dedup, and the number that isn't the order</h2>
+  <p>The encryption layer sits <em>under</em> the messenger's ordinary sort and dedup, and reuses them. Messages sort by their durable position and dedupe by id exactly as plaintext messages do — the delivery paper's rule that <em>identity is a ULID, order is a sequence</em> holds unchanged. Two encryption-specific rules ride on top: <strong>dedupe before the ratchet</strong> (and durably, §5 — a memory-only seen-set would let a replay through after reload); and a stall beyond <code>MAX_SKIP</code> shows a placeholder rather than silently reordering. The ratchet's own header carries its per-chain counters — we invent no sequence numbers of our own.</p>
+  <p>The skip budget is also a <strong>hardening knob</strong>, two-sided. A malicious sender can try to force a receiver to retain a mountain of skipped-message-keys, and retained skipped keys are themselves loot if the device is later compromised — so the cap is per-chain <em>and</em> per-session (<code>MAX_SKIP_PER_CHAIN</code>, a global <code>MAX_SKIPPED_KEYS_PER_SESSION</code>), with an eviction policy that ages them out. Bounded work, bounded exposure.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">08 — lifetime</span>
+  <h2>Disappearing, and what a deleted chat takes with it</h2>
+  <p>The stored plaintext — the only readable copy — has a clock. It is auto-deleted <strong>48 hours</strong> after it was saved; after that the message reads "lost" (unrecoverable by design, the ratchet key long gone). Deleting a chat wipes more than the server row: it purges that chat's local caches — <strong>attachment files, cached history, and the sealed secret plaintext</strong> — so "delete" removes the readable copy, not just the reference.</p>
+</section>
+<figure class="reveal">
+  <div class="panel">
+    <div class="timeline">
+      <div class="trow"><div class="lab win">sealed plaintext<br><small>the readable copy</small></div><div class="bar b">kept 48h → auto-wiped → "lost"</div></div>
+      <div class="trow"><div class="lab">recovery window<br><small>sender can re-encrypt</small></div><div class="bar a">≤ 48h</div></div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 2</span> — the readable copy and the recovery window share one 48-hour clock.</figcaption>
+</figure>
+
+<section class="wrap">
+  <span class="sec-label">09 — trust</span>
+  <h2>Safety numbers — closing the one hole encryption can't</h2>
+  <p>The key directory is <strong>trusted by construction</strong>. Encryption defeats a passive eavesdropper, but not an active one who can substitute a key: a compromised directory could hand you an attacker's identity key instead of your peer's, sit in the middle, and read everything. No amount of ratcheting closes that — the fix is human.</p>
+  <p>A <strong>safety number</strong> is a fingerprint of <em>both</em> parties' public identity keys. It does not, on its own, prove no key was swapped — nothing computed locally can. What it does is let two people <em>detect a mismatch</em> when they compare fingerprints over an authentic external channel. A verified number therefore <strong>binds the session to the identity keys observed during that out-of-band comparison</strong> — and nothing more. Compare it <em>inside</em> the same possibly-compromised chat and an attacker forges the comparison too; the out-of-band step is the whole guarantee. If an identity key later changes, the number changes and verification drops until you re-check.</p>
+  <p>One honesty about scope: the identity a number binds is a <strong>device (browser-instance) identity, not a user identity</strong>. "Alice on this laptop's Chrome" is a distinct key from "Alice on her phone." v1 verifies against a peer's first device; true multi-device — a person's several keys, asynchronously managed — is a Sesame-shaped problem left for later.</p>
+  <div class="callout">
+    <p class="tag">when the number changes</p>
+    <p>Only the <em>identity</em> key moves the number — not prekey rotation, not one-time prekeys. And it moves only when a device loses its stored identity: a new device or browser, a reinstall, cleared site data, or an evicted IndexedDB. Ordinary logout/login keeps it. There is no automatic identity rotation. So a changed number means one of those things happened — or someone is in the middle.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">10 — the price of a lost key</span>
+  <h2>Eviction: normal history returns, secret history doesn't</h2>
+  <p>The most important thing to understand about this design is what happens when the browser reclaims storage. Eviction takes the whole origin's IndexedDB at once — the device key, the Signal identity and sessions, the sealed plaintext, the media and history caches. What you lose then splits cleanly in two, and the split <em>is</em> the difference between a normal chat and a secret one.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <div class="grid2">
+      <div class="store keep">
+        <div class="nm">normal messages — recovered</div>
+        <div class="desc">The truth lives on the server (<code>message_history</code>). On reconnect the client re-pulls it and re-downloads files from storage. The local cache was only a cache; it repopulates. Nothing is lost.</div>
+        <div class="role">server is the source of truth</div>
+      </div>
+      <div class="store leave">
+        <div class="nm">secret messages — gone</div>
+        <div class="desc">The server holds only ciphertext it cannot read. The readable plaintext lived only on the device; the ratchet keys are consumed. Client-to-client recovery can salvage what a peer sent within 48h — your own sent, and anything older, is gone for good.</div>
+        <div class="role">no one else can restore it</div>
+      </div>
+    </div>
+  </div>
+  <figcaption><span class="fignum">Fig 3</span> — the same eviction; two outcomes. Secrecy is exactly the reason the server can't help.</figcaption>
+</figure>
+<section class="wrap">
+  <p>That is not a defect to be fixed — it is the definition of end-to-end encryption. A server that could restore your secret history could read it. What we <em>can</em> do is make eviction less likely: we request <strong>persistent storage</strong> (<code>navigator.storage.persist()</code>) so the browser won't reclaim under pressure. It is a mitigation, not a guarantee — a user who clears site data or reinstalls still starts fresh, with a new identity and a new safety number.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">11 — what holds, and what doesn't</span>
+  <h2>The invariants — and the residuals we name honestly</h2>
+  <p>What the design guarantees, each resting on a concrete mechanism:</p>
+</section>
+<figure class="wide reveal">
+  <div class="inv">
+    <div class="invcard"><div class="badge">✓ by construction</div><div class="id">E<sub>1</sub></div><p>The server never holds plaintext, a private key, or session state.</p><p class="basis">It relays opaque envelopes and stores public keys only. All crypto is client-side.</p></div>
+    <div class="invcard"><div class="badge">✓ protocol</div><div class="id">E<sub>2</sub></div><p><strong>Protocol</strong> forward secrecy: compromising the current ratchet state does not recover already-deleted message keys.</p><p class="basis">Keys are derived once and deleted; recovery restores plaintext, never a key. (Distinct from E3 — see the note.)</p></div>
+    <div class="invcard"><div class="badge">✓ web-crypto</div><div class="id">E<sub>3</sub></div><p>At-rest storage holds no plaintext outside the WebCrypto boundary.</p><p class="basis">Private keys + stored plaintext are AES-GCM-wrapped under a non-extractable device key. NOT a defence against runtime origin compromise — see R1, and the FS/at-rest split below.</p></div>
+    <div class="invcard"><div class="badge">✓ three layers</div><div class="id">E<sub>4</sub></div><p>Three separate durabilities, not one promise.</p><p class="basis"><b>Transport:</b> accepted ciphertext returns from server history. <b>Crypto:</b> the receiver can decrypt it. <b>Plaintext:</b> a local sealed copy or an eligible peer-recovery source exists. A message can hold the first two and still lose the third.</p></div>
+    <div class="invcard"><div class="badge">✓ human-checked</div><div class="id">E<sub>5</sub></div><p>MITM is detectable.</p><p class="basis">Safety numbers over both identity keys, compared out of band; a key change drops verification.</p></div>
+  </div>
+  <figcaption><span class="fignum">Fig 4</span> — the guarantees. Below: the ceilings none of them lift.</figcaption>
+</figure>
+<section class="wrap">
+  <div class="callout">
+    <p class="tag">two secrecies, kept apart</p>
+    <p><strong>Protocol forward secrecy</strong> (E2) and <strong>local plaintext confidentiality</strong> (E3) are different properties and must not be conflated. The ratchet guarantees that a compromise of <em>current session state</em> can't reopen old messages — the keys are gone. But the sealed plaintext of the last 48 hours <em>is</em> on the device: an attacker with the device key + IndexedDB reads it. That is not a break of Double Ratchet FS — it is the price of storing readable history at all, and it is bounded by the retention clock.</p>
+  </div>
+  <h3>Failure modes — the operational truth</h3>
+  <div class="tbl-scroll"><table>
+    <caption>What each condition is expected to produce. The value of the design is in these rows, not the prose.</caption>
+    <thead><tr><th>Condition</th><th>Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>duplicate ciphertext</td><td class="num">dedup (durable) — never reaches the ratchet</td></tr>
+      <tr><td>out-of-order within MAX_SKIP</td><td class="num">skipped-key processing; decrypts</td></tr>
+      <tr><td>contiguous gap &gt; MAX_SKIP</td><td class="num">GAP → recovery</td></tr>
+      <tr><td>crash before atomic commit</td><td class="num">ciphertext re-processed (key re-derivable only if not yet spent)</td></tr>
+      <tr><td>crash after atomic commit</td><td class="num">dedup</td></tr>
+      <tr><td>server history replay</td><td class="num">dedup</td></tr>
+      <tr><td>IndexedDB eviction</td><td class="num">new device identity + session re-establishment</td></tr>
+      <tr><td>plaintext within recovery window</td><td class="num">peer recovery (orthogonal session)</td></tr>
+      <tr><td>plaintext past retention</td><td class="num">LOST (honest, permanent)</td></tr>
+      <tr><td>identity key changed</td><td class="num">verification invalidated → re-verify</td></tr>
+      <tr><td>malformed ciphertext / bad ratchet header</td><td class="num">reject</td></tr>
+      <tr><td>recovery request flood</td><td class="num">rate + batch limit</td></tr>
+      <tr><td>recovery response, wrong AD / unknown id</td><td class="num">reject</td></tr>
+    </tbody>
+  </table></div>
+  <p>And the residuals — the honest ones, because a security design that hides them is worse than one that names them:</p>
+  <div class="callout crit">
+    <p class="tag">R1 · no secure enclave</p>
+    <p>Keys live in IndexedDB, reachable by any code that runs in the origin. Wrapping raises the at-rest bar, but a <em>runtime</em>-compromised origin can reach unwrapped bytes in memory. This is the fundamental ceiling of PWA E2EE — a native keystore would raise it, a web app cannot.</p>
+  </div>
+  <div class="callout warn">
+    <p class="tag">R2 · code-delivery integrity</p>
+    <p>Encryption is only as trustworthy as the JavaScript that runs it. An enforcing CSP and pinned dependencies harden delivery; fully closing it needs an external code-verifier (the "Code Verify" idea), which is out of scope here.</p>
+  </div>
+  <div class="callout warn">
+    <p class="tag">R3 · metadata is not hidden</p>
+    <p>Contents are sealed; the <em>envelope</em> is not. The server still sees who talks to whom and when. E2EE protects the message, not the social graph.</p>
+  </div>
+  <div class="callout warn">
+    <p class="tag">R4 · loss is real</p>
+    <p>Eviction, reinstall, or cleared storage loses secret history (§10) and rotates the identity — no cloud backup by design. Persistent-storage requests reduce, not remove, the risk. Multi-device shares an identity per device, and v1 verifies against the first device only.</p>
+  </div>
+  <div class="callout warn">
+    <p class="tag">R5 · handshake is pre-quantum</p>
+    <p>The initial agreement is X3DH. Signal has since moved to <strong>PQXDH</strong>, which adds post-quantum protection to the handshake against "harvest now, decrypt later." A new design should prefer PQXDH; treat X3DH here as the v1 baseline, not the ceiling.</p>
+  </div>
+  <p style="max-width:var(--measure); color:var(--muted); font-size:14.5px">Scope, stated plainly: <strong>opt-in, 1:1, text.</strong> Groups, encrypted attachments, a user-set retention, a PQXDH handshake, and a logout key-wipe policy are named future work, not silent gaps. And the claim is deliberately narrow and checkable — not "the strongest encryption a browser can offer," which is close to unprovable, but this: <em>a practical browser-based E2EE design on the Signal Double Ratchet, built to account explicitly for at-least-once delivery, durable history, browser-storage loss, and the security limits of the web platform — losing nothing a peer still holds, and admitting exactly what it cannot keep.</em></p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Hormigas Messenger — closed-chat encryption</span>
+    <span>X3DH · Double Ratchet · device-key at-rest · client-to-client recovery · safety numbers</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, key="crypto-wp-theme", btn=document.getElementById("tg");
+  function sys(){ return matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light"; }
+  var saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
+  if(saved==="dark"||saved==="light") root.setAttribute("data-theme",saved);
+  function cur(){ return root.getAttribute("data-theme") || sys(); }
+  btn.addEventListener("click",function(){
+    var next = cur()==="dark" ? "light":"dark";
+    root.setAttribute("data-theme",next);
+    try{ localStorage.setItem(key,next); }catch(e){}
+  });
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); obs.unobserve(en.target);} });
+    },{threshold:.1});
+    document.querySelectorAll(".reveal").forEach(function(el){ obs.observe(el); });
+  }
+})();
+</script>
