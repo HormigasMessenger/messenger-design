@@ -279,9 +279,9 @@ B       verify AD, decrypt, store under the ORIGINAL messageId, splice in place<
   <pre class="code">AD = protocolVersion ‖ conversationId ‖ senderIdentityKey ‖ receiverIdentityKey ‖ originalMessageId ‖ recoverySessionId</pre>
   <p>Two more properties the request must carry, because the ids are authenticated but not secret. The request is honored only over an <strong>authenticated session</strong>, only for messages that belong to this conversation and were authored by the requester's peer, and under a <strong>rate + batch limit</strong> — otherwise a flood of ids is a decrypt-and-encrypt <em>oracle</em>, a cheap DoS. The correlation id is a <strong>ULID</strong> minted by the sender: globally unique, immutable, and itself authenticated inside the message's AD, so both sides name the same message unambiguously.</p>
   <p>Because we recover plaintext and not a key, <strong>protocol forward secrecy is untouched</strong> — a later device compromise still can't reach a deleted message key. Recovery works only while the sender still holds the plaintext (a retention window, §8); past that, "lost" is honest and permanent. And note the sharper case: after an <em>eviction</em> the receiver's identity itself is gone, so recovery is not just message recovery but <strong>session re-establishment</strong> — another reason the repair path is its own protocol, not a message on an old chain. 1:1 only; groups and attachments are future work.</p>
-  <div class="callout warn">
-    <p class="tag">implementation note — honest status</p>
-    <p>The shipped v1 does the plaintext-recovery idea but currently re-encrypts over the <em>existing</em> session — so it repairs the common small-gap case (where the chain never actually stalled) and <em>fails</em> the true &gt;<code>MAX_SKIP</code> stall. Moving recovery onto a fresh, orthogonal session (and adding the AD binding above) is the priority fix before recovery is relied upon. Named here rather than hidden.</p>
+  <div class="callout">
+    <p class="tag">implementation note — shipped</p>
+    <p>An earlier draft re-encrypted over the <em>existing</em> session — repairing the common small-gap case but <em>failing</em> the true &gt;<code>MAX_SKIP</code> stall it was meant for, because the repair landed past the same un-crossable gap. A reviewer flagged it; it is now fixed. Recovery runs on a dedicated address, torn down and re-handshook per batch so its first frame is a prekey message and the receiver builds a clean chain, and each recovered item is AEAD-bound to <code>(messageId, chatId)</code> and verified on decrypt. The receiver drops the recovery session after each batch, so that address never accumulates state. Named here rather than hidden.</p>
   </div>
 </section>
 
@@ -289,7 +289,7 @@ B       verify AD, decrypt, store under the ORIGINAL messageId, splice in place<
   <span class="sec-label">07 — order &amp; identity</span>
   <h2>Sorting, dedup, and the number that isn't the order</h2>
   <p>The encryption layer sits <em>under</em> the messenger's ordinary sort and dedup, and reuses them. Messages sort by their durable position and dedupe by id exactly as plaintext messages do — the delivery paper's rule that <em>identity is a ULID, order is a sequence</em> holds unchanged. Two encryption-specific rules ride on top: <strong>dedupe before the ratchet</strong> (and durably, §5 — a memory-only seen-set would let a replay through after reload); and a stall beyond <code>MAX_SKIP</code> shows a placeholder rather than silently reordering. The ratchet's own header carries its per-chain counters — we invent no sequence numbers of our own.</p>
-  <p>The skip budget is also a <strong>hardening knob</strong>, two-sided. A malicious sender can try to force a receiver to retain a mountain of skipped-message-keys, and retained skipped keys are themselves loot if the device is later compromised — so the cap is per-chain <em>and</em> per-session (<code>MAX_SKIP_PER_CHAIN</code>, a global <code>MAX_SKIPPED_KEYS_PER_SESSION</code>), with an eviction policy that ages them out. Bounded work, bounded exposure.</p>
+  <p>The skip budget is also a <strong>hardening knob</strong>, two-sided. A malicious sender can try to force a receiver to retain a mountain of skipped-message-keys, and retained skipped keys are themselves loot if the device is later compromised — so the budget is bounded on two axes. The library caps a single forward jump at <code>MAX_SKIP_PER_CHAIN = 2000</code> (a wider jump throws rather than deriving keys), and it self-evicts across chains and sessions — at most ten old ratchet chains and forty archived sessions per record, oldest first. So retained-key memory is bounded <em>without forking the crypto library</em>; a gap past the per-chain cap is un-healable on the live chain by construction and routes to recovery. Bounded work, bounded exposure.</p>
 </section>
 
 <section class="wrap">
@@ -367,22 +367,23 @@ B       verify AD, decrypt, store under the ORIGINAL messageId, splice in place<
   </div>
   <h3>Failure modes — the operational truth</h3>
   <div class="tbl-scroll"><table>
-    <caption>What each condition is expected to produce. The value of the design is in these rows, not the prose.</caption>
-    <thead><tr><th>Condition</th><th>Expected result</th></tr></thead>
+    <caption>What each condition is expected to produce, and what the reader sees while it resolves. The value of the design is in these rows, not the prose. The visible state is one of a small closed set — <em>decrypting</em> (transient), <em>⏳ re-requested</em> (recovery in flight), <em>🔒 unavailable</em> (no readable copy, not recoverable), <em>🔒 lost</em> (recovery exhausted or past the 48h window) — never a raw error.</caption>
+    <thead><tr><th>Condition</th><th>Expected result</th><th>What you see</th></tr></thead>
     <tbody>
-      <tr><td>duplicate ciphertext</td><td class="num">dedup (durable) — never reaches the ratchet</td></tr>
-      <tr><td>out-of-order within MAX_SKIP</td><td class="num">skipped-key processing; decrypts</td></tr>
-      <tr><td>contiguous gap &gt; MAX_SKIP</td><td class="num">GAP → recovery</td></tr>
-      <tr><td>crash before atomic commit</td><td class="num">ciphertext re-processed (key re-derivable only if not yet spent)</td></tr>
-      <tr><td>crash after atomic commit</td><td class="num">dedup</td></tr>
-      <tr><td>server history replay</td><td class="num">dedup</td></tr>
-      <tr><td>IndexedDB eviction</td><td class="num">new device identity + session re-establishment</td></tr>
-      <tr><td>plaintext within recovery window</td><td class="num">peer recovery (orthogonal session)</td></tr>
-      <tr><td>plaintext past retention</td><td class="num">LOST (honest, permanent)</td></tr>
-      <tr><td>identity key changed</td><td class="num">verification invalidated → re-verify</td></tr>
-      <tr><td>malformed ciphertext / bad ratchet header</td><td class="num">reject</td></tr>
-      <tr><td>recovery request flood</td><td class="num">rate + batch limit</td></tr>
-      <tr><td>recovery response, wrong AD / unknown id</td><td class="num">reject</td></tr>
+      <tr><td>duplicate ciphertext</td><td class="num">dedup (durable) — never reaches the ratchet</td><td>the message (no flicker)</td></tr>
+      <tr><td>out-of-order within MAX_SKIP</td><td class="num">skipped-key processing; decrypts</td><td>the message</td></tr>
+      <tr><td>contiguous gap &gt; MAX_SKIP</td><td class="num">GAP → recovery</td><td>⏳ re-requested → the message</td></tr>
+      <tr><td>crash before atomic commit</td><td class="num">ciphertext re-processed (key re-derivable only if not yet spent)</td><td>decrypting → the message</td></tr>
+      <tr><td>crash after atomic commit</td><td class="num">dedup</td><td>the message</td></tr>
+      <tr><td>server history replay</td><td class="num">dedup</td><td>the message</td></tr>
+      <tr><td>IndexedDB eviction</td><td class="num">new device identity + session re-establishment</td><td>older secret history 🔒 lost; new messages resume</td></tr>
+      <tr><td>plaintext within recovery window</td><td class="num">peer recovery (orthogonal session)</td><td>⏳ re-requested → the message</td></tr>
+      <tr><td>plaintext past retention</td><td class="num">LOST (honest, permanent)</td><td>🔒 lost</td></tr>
+      <tr><td>own message we can't ratchet, no stored copy</td><td class="num">not recoverable from the ratchet</td><td>🔒 unavailable</td></tr>
+      <tr><td>identity key changed</td><td class="num">verification invalidated → re-verify</td><td>safety number clears; re-verify prompt</td></tr>
+      <tr><td>malformed ciphertext / bad ratchet header</td><td class="num">reject</td><td>🔒 unavailable</td></tr>
+      <tr><td>recovery request flood</td><td class="num">rate + batch limit</td><td>—</td></tr>
+      <tr><td>recovery response, wrong AD / unknown id</td><td class="num">reject</td><td>stays ⏳ / 🔒 lost</td></tr>
     </tbody>
   </table></div>
   <p>And the residuals — the honest ones, because a security design that hides them is worse than one that names them:</p>
