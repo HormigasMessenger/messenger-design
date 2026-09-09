@@ -63,14 +63,27 @@ h1 em{font-style:italic; color:var(--accent-deep)}
 .waterline::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
 
 main{padding:14px 0 40px}
-section{padding:34px 0}
+section{padding:30px 0}
+.step-label{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.step-n{display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 auto; border-radius:50%;
+  background:var(--accent-soft); color:var(--accent-deep); font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:500}
+.step-label .sec-label{margin:0}
 .sec-label{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:14px}
-h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.6rem,3.2vw,2.2rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
-p{margin:16px 0}
+h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.55rem,3.2vw,2.15rem); line-height:1.12; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+p{margin:14px 0}
 a{color:var(--accent-deep); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
 strong{font-weight:600; color:var(--ink)}
 kbd{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--code-bg); color:var(--code-ink);
   border:1px solid var(--hair); border-radius:6px; padding:1px 7px; white-space:nowrap}
+
+.launch{display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px; background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:16px 20px; box-shadow:var(--shadow); margin:6px 0 12px}
+.launch .u{font-family:"IBM Plex Mono",monospace; font-size:15px; color:var(--accent-deep); word-break:break-all}
+.go{display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; padding:9px 18px; font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.04em; margin-left:auto}
+.go:hover{background:var(--accent-deep)}
+
+.osrow{display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:15.5px; margin:8px 0 0}
+.osrow dt{font-weight:600; color:var(--ink)}
+.osrow dd{margin:0; color:var(--muted)}
 
 .cards{display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:8px}
 @media (max-width:640px){ .cards{grid-template-columns:1fr} }
@@ -84,11 +97,17 @@ kbd{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--cod
 .card ol li strong{color:var(--ink)}
 .card .aside{font-size:13px; color:var(--faint); margin:10px 0 0}
 
-.pill{display:inline-flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--hair); border-radius:999px; padding:8px 16px; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); text-decoration:none; margin-top:6px}
-.pill:hover{border-color:var(--accent)}
+ul.plain{margin:12px 0; padding-left:1.15em; color:var(--muted)}
+ul.plain li{margin:7px 0}
+ul.plain li strong{color:var(--ink)}
 
 .note{background:var(--surface-2); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:16px 18px; font-size:15.5px; color:var(--muted)}
+.note.warn{border-left-color:var(--amber-line)}
 .note strong{color:var(--ink)}
+
+.thanks{text-align:center; padding:44px 0 8px}
+.thanks .big{font-family:"Newsreader",Georgia,serif; font-style:italic; font-weight:380; font-size:clamp(1.5rem,3.4vw,2rem); color:var(--accent-deep); margin:0}
+.thanks p{color:var(--muted); max-width:46ch; margin:12px auto 0}
 
 footer{border-top:1px solid var(--hair); margin-top:24px; padding:32px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px}
 footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between}
@@ -103,11 +122,10 @@ footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-b
 
 <main>
 <section class="hero wrap">
-  <p class="kicker">Install</p>
-  <h1>Keep it <em>one tap</em> away.</h1>
-  <p class="dek">Hormigas Messenger installs straight from the browser — no app store. Add it to your home screen and it opens full-screen, works offline, and rings for calls like a native app.</p>
+  <p class="kicker">Setup guide</p>
+  <h1>Get set up in <em>five steps.</em></h1>
+  <p class="dek">Open it, install it, turn on notifications, and check it works. Then a word on what the info panel shows you and how to wipe the device clean.</p>
   <div class="byline">
-    <span><a href="https://hormi.isolutions.io/messenger-ui/">Open the app ↗</a></span>
     <span>companion to <a href="./">the delivery essay</a></span>
     <span>and <a href="encryption.html">the encryption whitepaper</a></span>
   </div>
@@ -116,14 +134,25 @@ footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-b
 <hr class="waterline">
 
 <section class="wrap">
-  <span class="sec-label">What it is</span>
-  <h2>A Progressive Web App</h2>
-  <p>There is nothing to download from a store and no account beyond the one you already sign in with. The messenger is a <strong>PWA</strong>: a website your browser can promote to a real app. Once installed it lives on your home screen or dock, launches in its own window, keeps working when the network drops, and delivers push notifications. Below is the one small gesture each platform needs.</p>
+  <div class="step-label"><span class="step-n">1</span><span class="sec-label">Open the app</span></div>
+  <h2>Go to the messenger in your browser</h2>
+  <div class="launch">
+    <span class="u">hormi.isolutions.io/messenger-ui/</span>
+    <a class="go" href="https://hormi.isolutions.io/messenger-ui/">Open ↗</a>
+  </div>
+  <p>Use the browser that can install a web app on your system — this matters, the install option only appears in the right one:</p>
+  <dl class="osrow">
+    <dt>iPhone / iPad</dt><dd><strong>Safari</strong> (iOS installs web apps only from Safari)</dd>
+    <dt>Android</dt><dd><strong>Chrome</strong></dd>
+    <dt>Windows / Linux</dt><dd><strong>Chrome</strong> or <strong>Edge</strong></dd>
+    <dt>Mac</dt><dd><strong>Chrome</strong>, <strong>Edge</strong>, or Safari 17+</dd>
+  </dl>
+  <p class="aside" style="color:var(--faint);font-size:14px">You sign in with your existing account; the same browser keeps you signed in, so there’s no separate password to set up here.</p>
 </section>
 
 <section class="wrap">
-  <span class="sec-label">Install it</span>
-  <h2>Pick your device</h2>
+  <div class="step-label"><span class="step-n">2</span><span class="sec-label">Install to your device</span></div>
+  <h2>Add it to the home screen</h2>
   <div class="cards">
 
     <div class="card">
@@ -132,11 +161,10 @@ footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-b
         <h3>iPhone &amp; iPad — Safari</h3>
       </div>
       <ol>
-        <li>Open the app in <strong>Safari</strong>.</li>
         <li>Tap the <strong>Share</strong> button <kbd>↑</kbd>.</li>
-        <li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li>
+        <li>Choose <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong>.</li>
       </ol>
-      <p class="aside">iOS installs PWAs only from Safari, not Chrome.</p>
     </div>
 
     <div class="card">
@@ -145,11 +173,10 @@ footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-b
         <h3>Android — Chrome</h3>
       </div>
       <ol>
-        <li>Open the app in <strong>Chrome</strong>.</li>
         <li>Tap the <strong>⋮</strong> menu (top right).</li>
         <li>Choose <strong>Install app</strong> (or <strong>Add to Home screen</strong>).</li>
+        <li>Confirm.</li>
       </ol>
-      <p class="aside">Chrome may also show an “Install” banner on its own.</p>
     </div>
 
     <div class="card">
@@ -158,35 +185,76 @@ footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-b
         <h3>Desktop — Chrome / Edge</h3>
       </div>
       <ol>
-        <li>Open the app in <strong>Chrome</strong> or <strong>Edge</strong>.</li>
         <li>Click the <strong>install icon</strong> at the right of the address bar…</li>
-        <li>…or <strong>⋮</strong> menu → <strong>Install Hormigas Messenger</strong>.</li>
+        <li>…or <strong>⋮</strong> menu → <strong>Install</strong>.</li>
+        <li>Confirm. (Safari on Mac: File → Add to Dock.)</li>
       </ol>
-      <p class="aside">Safari on macOS: File → Add to Dock.</p>
     </div>
 
     <div class="card">
       <div class="plat">
         <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
-        <h3>Already inside the app</h3>
+        <h3>Or, from inside the app</h3>
       </div>
       <ol>
         <li>Open <strong>ℹ️ App info</strong> (top of the chat list).</li>
-        <li>Find the <strong>Install app</strong> section.</li>
-        <li>Tap <strong>Install</strong> — a one-tap button where the browser supports it.</li>
+        <li>Find <strong>Install app</strong>.</li>
+        <li>Tap <strong>Install</strong> where the browser supports it.</li>
       </ol>
-      <p class="aside">Falls back to these same steps where it can’t.</p>
     </div>
 
   </div>
-  <a class="pill" href="https://hormi.isolutions.io/messenger-ui/">Open the app to begin ↗</a>
 </section>
 
 <section class="wrap">
-  <span class="sec-label">Good to know</span>
-  <h2>After it’s installed</h2>
-  <p>It <strong>updates itself</strong> — the next launch quietly picks up the latest version, no reinstall. It runs <strong>offline</strong> for what you’ve already loaded, and re-syncs when you’re back. Remove it like any app: long-press the icon → Remove, or the browser’s app settings.</p>
-  <p class="note">The same <strong>ℹ️ App info</strong> dialog also holds <strong>“Erase everything on this device”</strong> — a one-gesture wipe of all local data (the device key, secret messages, cached chats and files) for when you need to hand the device on clean. A fresh key is created the next time you sign in.</p>
+  <div class="step-label"><span class="step-n">3</span><span class="sec-label">Allow notifications</span></div>
+  <h2>Turn on alerts</h2>
+  <p>Open the installed app. Near the top it shows an <strong>“Enable notifications”</strong> prompt — tap it, then choose <strong>Allow</strong> in the browser’s permission dialog.</p>
+  <p>That’s what lets the messenger reach you when it’s closed: a <strong>call rings</strong> even if the app isn’t open, and <strong>new messages</strong> raise a notification with the sender’s name. If you dismissed the prompt, you can grant it later in the browser’s site settings (the padlock/ⓘ next to the address).</p>
+  <p class="note">Secret chats never reveal their text in a notification — an encrypted message shows only a generic “🔒 Encrypted message”.</p>
+</section>
+
+<section class="wrap">
+  <div class="step-label"><span class="step-n">4</span><span class="sec-label">Check it works</span></div>
+  <h2>A quick confirmation</h2>
+  <ul class="plain">
+    <li><strong>It launches on its own.</strong> Opening from the home-screen icon shows the app <em>full-screen</em> — no browser address bar.</li>
+    <li><strong>Messages arrive.</strong> Send one to a contact (or ask them to send you one) and watch it appear; the ✓✓ turns when they read it.</li>
+    <li><strong>Notifications fire.</strong> With the app in the background, a new message or an incoming call should alert you.</li>
+    <li><strong>It survives offline.</strong> Turn the network off and reopen — chats you’ve already loaded are still there, and it re-syncs when you’re back.</li>
+  </ul>
+</section>
+
+<hr class="waterline">
+
+<section class="wrap">
+  <span class="sec-label">The ℹ️ App info panel</span>
+  <h2>What the info page shows you</h2>
+  <p>Tap the <strong>ℹ️</strong> at the top of the chat list. It’s a read-out of this device — nothing here messages anyone; it’s for seeing and controlling what the app keeps locally:</p>
+  <ul class="plain">
+    <li><strong>General</strong> — app version, when it was built, when you signed in.</li>
+    <li><strong>Storage</strong> — how much space is used, split into cached <em>files</em>, <em>secret messages</em>, and other; whether storage is marked persistent.</li>
+    <li><strong>Encryption</strong> — when this device’s key was created, how many secret messages are stored, how many are awaiting recovery, and how many contacts you’ve verified.</li>
+    <li><strong>Connection</strong> — the live socket status and a small graph of reconnects, handy if the network feels flaky.</li>
+    <li><strong>Install app</strong> — the one-tap install button, if you skipped step 2.</li>
+  </ul>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">Clearing &amp; control</span>
+  <h2>Erase everything on this device</h2>
+  <p>At the bottom of the same <strong>ℹ️</strong> panel is <strong>“Erase everything on this device.”</strong> It’s a deliberate two-step button — the first tap only reveals the confirmation — because it is total:</p>
+  <ul class="plain">
+    <li>It removes <strong>all local data</strong>: the device (master) key, your secret messages, cached chats and files, and every stored setting.</li>
+    <li>The app reloads. On your next sign-in a <strong>fresh device key is created</strong> automatically.</li>
+    <li>Encrypted history from before is <strong>gone for good</strong> — its keys are destroyed, which is the point.</li>
+  </ul>
+  <p class="note warn">Use it to hand the device on clean, or if you’re worried it’s no longer only yours. It clears local storage only — it doesn’t sign you out on the server, so on a shared device use your account’s normal <em>Log out</em> as well.</p>
+</section>
+
+<section class="wrap thanks">
+  <p class="big">That’s everything — you’re set.</p>
+  <p>Thank you for using Hormigas Messenger. Questions about how any of this works underneath live in <a href="./">the delivery essay</a> and <a href="encryption.html">the encryption whitepaper</a>.</p>
 </section>
 </main>
 
