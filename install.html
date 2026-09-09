@@ -1,0 +1,213 @@
+<title>Install Hormigas Messenger</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,320;0,6..72,440;0,6..72,560;1,6..72,380;1,6..72,440&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#F1F4F3; --surface:#FFFFFF; --surface-2:#F6F9F8;
+  --ink:#13201F; --muted:#566765; --faint:#7E8F8D;
+  --accent:#0E7C7B; --accent-deep:#0A5250; --accent-soft:#DCEEEC;
+  --amber:#A9600F; --amber-soft:#F4E8D6; --amber-line:#C67A1E;
+  --hair:#D8E2E0; --hair-strong:#C3D2D0;
+  --code-bg:#F2F6F5; --code-ink:#15302E;
+  --shadow:0 1px 2px rgba(19,32,31,.05), 0 8px 30px rgba(19,32,31,.06);
+  --measure:70ch; --wide:1120px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+    --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+    --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+    --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+    --hair:#21302E; --hair-strong:#2C403D;
+    --code-bg:#0E1A19; --code-ink:#CFE3E0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+  --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+  --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+  --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+  --hair:#21302E; --hair-strong:#2C403D;
+  --code-bg:#0E1A19; --code-ink:#CFE3E0;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif; font-size:18px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility}
+.wrap{max-width:var(--measure); margin:0 auto; padding:0 24px}
+
+header.top{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--ground) 86%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--hair)}
+.top-in{max-width:var(--wide); margin:0 auto; padding:14px 24px; display:flex; align-items:baseline; justify-content:space-between; gap:16px}
+.brand{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.brand b{color:var(--accent); font-weight:500}
+.toggle{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:none; border:1px solid var(--hair-strong); border-radius:999px; padding:6px 12px; cursor:pointer}
+.toggle:hover{color:var(--ink); border-color:var(--accent)}
+.toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.hero{padding:72px 0 22px}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 22px}
+h1{font-family:"Newsreader",Georgia,serif; font-weight:440; font-size:clamp(2.5rem,6vw,4.4rem); line-height:1.02; letter-spacing:-.015em; margin:0; text-wrap:balance; color:var(--ink)}
+h1 em{font-style:italic; color:var(--accent-deep)}
+.dek{font-family:"Newsreader",Georgia,serif; font-weight:380; font-style:italic; font-size:clamp(1.2rem,2.4vw,1.55rem); line-height:1.42; color:var(--muted); margin:24px 0 0; max-width:42ch; text-wrap:balance}
+.byline{margin-top:26px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.05em; color:var(--faint); display:flex; flex-wrap:wrap; gap:8px 18px}
+
+.waterline{height:2px; background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 88%,transparent); margin:0; border:0; opacity:.85; position:relative}
+.waterline::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+
+main{padding:14px 0 40px}
+section{padding:34px 0}
+.sec-label{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:14px}
+h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.6rem,3.2vw,2.2rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+p{margin:16px 0}
+a{color:var(--accent-deep); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
+strong{font-weight:600; color:var(--ink)}
+kbd{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--code-bg); color:var(--code-ink);
+  border:1px solid var(--hair); border-radius:6px; padding:1px 7px; white-space:nowrap}
+
+.cards{display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:8px}
+@media (max-width:640px){ .cards{grid-template-columns:1fr} }
+.card{background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:20px 20px; box-shadow:var(--shadow)}
+.card .plat{display:flex; align-items:center; gap:10px; margin:0 0 10px}
+.card .ico{width:30px; height:30px; flex:0 0 auto; display:grid; place-items:center; border-radius:8px; background:var(--accent-soft); color:var(--accent-deep)}
+.card .ico svg{width:17px; height:17px; display:block}
+.card h3{margin:0; font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:1.02rem; letter-spacing:-.01em; color:var(--ink)}
+.card ol{margin:0; padding-left:1.15em; font-size:15.5px; line-height:1.62; color:var(--muted)}
+.card ol li{margin:5px 0}
+.card ol li strong{color:var(--ink)}
+.card .aside{font-size:13px; color:var(--faint); margin:10px 0 0}
+
+.pill{display:inline-flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--hair); border-radius:999px; padding:8px 16px; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); text-decoration:none; margin-top:6px}
+.pill:hover{border-color:var(--accent)}
+
+.note{background:var(--surface-2); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:16px 18px; font-size:15.5px; color:var(--muted)}
+.note strong{color:var(--ink)}
+
+footer{border-top:1px solid var(--hair); margin-top:24px; padding:32px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+footer .wrap{display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Hormigas · <b>Messenger</b> · install</div>
+    <button class="toggle" id="tg" aria-label="Toggle color theme">Theme</button>
+  </div>
+</header>
+
+<main>
+<section class="hero wrap">
+  <p class="kicker">Install</p>
+  <h1>Keep it <em>one tap</em> away.</h1>
+  <p class="dek">Hormigas Messenger installs straight from the browser — no app store. Add it to your home screen and it opens full-screen, works offline, and rings for calls like a native app.</p>
+  <div class="byline">
+    <span><a href="https://hormi.isolutions.io/messenger-ui/">Open the app ↗</a></span>
+    <span>companion to <a href="./">the delivery essay</a></span>
+    <span>and <a href="encryption.html">the encryption whitepaper</a></span>
+  </div>
+</section>
+
+<hr class="waterline">
+
+<section class="wrap">
+  <span class="sec-label">What it is</span>
+  <h2>A Progressive Web App</h2>
+  <p>There is nothing to download from a store and no account beyond the one you already sign in with. The messenger is a <strong>PWA</strong>: a website your browser can promote to a real app. Once installed it lives on your home screen or dock, launches in its own window, keeps working when the network drops, and delivers push notifications. Below is the one small gesture each platform needs.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">Install it</span>
+  <h2>Pick your device</h2>
+  <div class="cards">
+
+    <div class="card">
+      <div class="plat">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg></span>
+        <h3>iPhone &amp; iPad — Safari</h3>
+      </div>
+      <ol>
+        <li>Open the app in <strong>Safari</strong>.</li>
+        <li>Tap the <strong>Share</strong> button <kbd>↑</kbd>.</li>
+        <li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li>
+      </ol>
+      <p class="aside">iOS installs PWAs only from Safari, not Chrome.</p>
+    </div>
+
+    <div class="card">
+      <div class="plat">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><line x1="10" y1="18" x2="14" y2="18"/></svg></span>
+        <h3>Android — Chrome</h3>
+      </div>
+      <ol>
+        <li>Open the app in <strong>Chrome</strong>.</li>
+        <li>Tap the <strong>⋮</strong> menu (top right).</li>
+        <li>Choose <strong>Install app</strong> (or <strong>Add to Home screen</strong>).</li>
+      </ol>
+      <p class="aside">Chrome may also show an “Install” banner on its own.</p>
+    </div>
+
+    <div class="card">
+      <div class="plat">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        <h3>Desktop — Chrome / Edge</h3>
+      </div>
+      <ol>
+        <li>Open the app in <strong>Chrome</strong> or <strong>Edge</strong>.</li>
+        <li>Click the <strong>install icon</strong> at the right of the address bar…</li>
+        <li>…or <strong>⋮</strong> menu → <strong>Install Hormigas Messenger</strong>.</li>
+      </ol>
+      <p class="aside">Safari on macOS: File → Add to Dock.</p>
+    </div>
+
+    <div class="card">
+      <div class="plat">
+        <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+        <h3>Already inside the app</h3>
+      </div>
+      <ol>
+        <li>Open <strong>ℹ️ App info</strong> (top of the chat list).</li>
+        <li>Find the <strong>Install app</strong> section.</li>
+        <li>Tap <strong>Install</strong> — a one-tap button where the browser supports it.</li>
+      </ol>
+      <p class="aside">Falls back to these same steps where it can’t.</p>
+    </div>
+
+  </div>
+  <a class="pill" href="https://hormi.isolutions.io/messenger-ui/">Open the app to begin ↗</a>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">Good to know</span>
+  <h2>After it’s installed</h2>
+  <p>It <strong>updates itself</strong> — the next launch quietly picks up the latest version, no reinstall. It runs <strong>offline</strong> for what you’ve already loaded, and re-syncs when you’re back. Remove it like any app: long-press the icon → Remove, or the browser’s app settings.</p>
+  <p class="note">The same <strong>ℹ️ App info</strong> dialog also holds <strong>“Erase everything on this device”</strong> — a one-gesture wipe of all local data (the device key, secret messages, cached chats and files) for when you need to hand the device on clean. A fresh key is created the next time you sign in.</p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Hormigas Messenger — install guide</span>
+    <span>PWA · offline-capable · <a href="encryption.html">end-to-end encrypted</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, key="crypto-wp-theme", btn=document.getElementById("tg");
+  function sys(){ return matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light"; }
+  var saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
+  if(saved==="dark"||saved==="light") root.setAttribute("data-theme",saved);
+  function cur(){ return root.getAttribute("data-theme") || sys(); }
+  btn.addEventListener("click",function(){
+    var next = cur()==="dark" ? "light":"dark";
+    root.setAttribute("data-theme",next);
+    try{ localStorage.setItem(key,next); }catch(e){}
+  });
+})();
+</script>
