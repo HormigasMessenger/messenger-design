@@ -1,0 +1,610 @@
+<title>The Heart That Routes Every Message</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,320;0,6..72,440;0,6..72,560;1,6..72,380;1,6..72,440&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#F1F4F3; --surface:#FFFFFF; --surface-2:#F6F9F8;
+  --ink:#13201F; --muted:#566765; --faint:#7E8F8D;
+  --accent:#0E7C7B; --accent-deep:#0A5250; --accent-soft:#DCEEEC;
+  --amber:#A9600F; --amber-soft:#F4E8D6; --amber-line:#C67A1E;
+  --good:#0E7C5A; --good-soft:#D9EEE4;
+  --crit:#B0322A; --crit-soft:#F6E3E1; --crit-line:#C24A40;
+  --hair:#D8E2E0; --hair-strong:#C3D2D0;
+  --code-bg:#F2F6F5; --code-ink:#15302E;
+  --shadow:0 1px 2px rgba(19,32,31,.05), 0 8px 30px rgba(19,32,31,.06);
+  --measure:70ch; --wide:1120px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+    --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+    --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+    --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+    --good:#3FBF8C; --good-soft:#12281F;
+    --crit:#E8746B; --crit-soft:#2A1512; --crit-line:#E8746B;
+    --hair:#21302E; --hair-strong:#2C403D;
+    --code-bg:#0E1A19; --code-ink:#CFE3E0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1413; --surface:#101C1B; --surface-2:#0E1918;
+  --ink:#E9EFEE; --muted:#93A6A4; --faint:#6F8280;
+  --accent:#34B8B2; --accent-deep:#69D3CE; --accent-soft:#12302E;
+  --amber:#D9993F; --amber-soft:#2A2114; --amber-line:#D9993F;
+  --good:#3FBF8C; --good-soft:#12281F;
+  --crit:#E8746B; --crit-soft:#2A1512; --crit-line:#E8746B;
+  --hair:#21302E; --hair-strong:#2C403D;
+  --code-bg:#0E1A19; --code-ink:#CFE3E0;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif; font-size:18px; line-height:1.7;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility}
+.wrap{max-width:var(--measure); margin:0 auto; padding:0 24px}
+.bleed{max-width:var(--wide); margin:0 auto; padding:0 24px}
+header.top{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--ground) 86%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--hair)}
+.top-in{max-width:var(--wide); margin:0 auto; padding:14px 24px; display:flex; align-items:baseline; justify-content:space-between; gap:16px}
+.brand{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.brand b{color:var(--accent); font-weight:500}
+.toggle{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:none; border:1px solid var(--hair-strong); border-radius:999px; padding:6px 12px; cursor:pointer}
+.toggle:hover{color:var(--ink); border-color:var(--accent)}
+.toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.hero{padding:76px 0 24px}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 22px}
+h1{font-family:"Newsreader",Georgia,serif; font-weight:440; font-size:clamp(2.7rem,6.4vw,4.9rem); line-height:1.0; letter-spacing:-.015em; margin:0; text-wrap:balance; color:var(--ink)}
+h1 em{font-style:italic; color:var(--accent-deep)}
+.dek{font-family:"Newsreader",Georgia,serif; font-weight:380; font-style:italic; font-size:clamp(1.25rem,2.5vw,1.62rem); line-height:1.42; color:var(--muted); margin:26px 0 0; max-width:42ch; text-wrap:balance}
+.byline{margin-top:28px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.05em; color:var(--faint); display:flex; flex-wrap:wrap; gap:8px 18px}
+.waterline{height:2px; background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 88%,transparent); margin:0; border:0; opacity:.85; position:relative}
+.waterline::after{content:""; position:absolute; left:12%; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+main{padding:14px 0 40px}
+section{padding:40px 0}
+.abstract{background:var(--surface); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:12px; padding:24px 26px; margin:34px 0 8px; box-shadow:var(--shadow)}
+.abstract .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+.abstract p{margin:8px 0; font-size:1.02rem}
+.sec-label{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:14px}
+h2{font-family:"Newsreader",Georgia,serif; font-weight:500; font-size:clamp(1.7rem,3.4vw,2.35rem); line-height:1.1; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance}
+h3{font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:1.12rem; margin:32px 0 6px}
+p{margin:16px 0}
+.lead{font-size:1.18rem; line-height:1.6}
+a{color:var(--accent-deep); text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:1px}
+strong{font-weight:600; color:var(--ink)}
+code{font-family:"IBM Plex Mono",monospace; font-size:.85em; background:var(--code-bg); color:var(--code-ink); padding:.12em .38em; border-radius:4px; border:1px solid var(--hair)}
+ul.notes{list-style:none; padding:0; margin:18px 0; display:flex; flex-direction:column; gap:12px}
+ul.notes li{padding-left:26px; position:relative}
+ul.notes li::before{content:""; position:absolute; left:2px; top:.72em; width:9px; height:2px; background:var(--accent)}
+.pull{border-left:2px solid var(--accent); padding:6px 0 6px 26px; margin:36px 0; font-family:"Newsreader",Georgia,serif; font-style:italic; font-weight:380; font-size:clamp(1.35rem,3vw,1.7rem); line-height:1.32; color:var(--ink); text-wrap:balance}
+.callout{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:20px 22px; margin:26px 0; box-shadow:var(--shadow)}
+.callout .tag{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 8px}
+.callout.warn .tag{color:var(--amber)} .callout.warn{border-left:3px solid var(--amber-line)}
+.callout.crit .tag{color:var(--crit)} .callout.crit{border-left:3px solid var(--crit-line)}
+.callout p{margin:6px 0}
+pre.code{background:var(--code-bg); border:1px solid var(--hair); border-left:3px solid var(--accent); border-radius:10px; padding:16px 18px; margin:22px 0; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:13.5px; line-height:1.6; color:var(--code-ink)}
+pre.code .c{color:var(--faint)} pre.code .v{color:var(--accent-deep); font-weight:500} pre.code .r{color:var(--amber)}
+figure{margin:34px 0}
+figure.wide{max-width:var(--wide); margin-left:calc(50% - min(50vw,var(--wide)/2)); margin-right:auto; padding:0 24px}
+figcaption{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-top:14px; text-align:center}
+.panel{background:var(--surface); border:1px solid var(--hair); border-radius:14px; padding:30px; box-shadow:var(--shadow)}
+.fignum{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:500}
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:10px}
+.stage{flex:1 1 130px; min-width:120px; background:var(--surface-2); border:1px solid var(--hair); border-radius:10px; padding:13px 14px}
+.stage .n{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--accent-deep)}
+.stage .t{font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4}
+.arrow{align-self:center; color:var(--faint); font-size:16px; flex:0 0 auto}
+.store{border-radius:9px; padding:14px; border:1px solid var(--hair); background:var(--surface-2)}
+.store.keep{background:var(--good-soft); border-color:color-mix(in srgb,var(--good) 35%,var(--hair))}
+.store.leave{background:var(--accent-soft)}
+.store .nm{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--ink)}
+.store .desc{font-size:13.5px; color:var(--muted); margin-top:4px; line-height:1.45}
+.store .role{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; margin-top:9px}
+.store.keep .role{color:var(--good)} .store.leave .role{color:var(--accent-deep)}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.states{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:13px}
+.st{padding:8px 12px; border-radius:8px; border:1px solid var(--hair); background:var(--surface-2)}
+.st.wait{border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber)}
+.st.ok{border-color:var(--good); background:var(--good-soft); color:var(--good)}
+.st.lost{border-color:var(--crit-line); background:var(--crit-soft); color:var(--crit)}
+.timeline{display:flex; flex-direction:column; gap:14px; font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+.trow{display:grid; grid-template-columns:160px 1fr; gap:14px; align-items:center}
+.trow .lab{color:var(--ink)} .trow .lab small{display:block; color:var(--faint); font-size:11px}
+.bar{height:26px; border-radius:6px; display:flex; align-items:center; padding:0 12px; color:#fff; font-size:11.5px; white-space:nowrap}
+.bar.a{background:var(--amber-line); width:14%} .bar.b{background:var(--accent); width:100%}
+.inv{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px}
+.invcard{background:var(--surface); border:1px solid var(--hair); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); position:relative}
+.invcard .id{font-family:"Newsreader",serif; font-style:italic; font-size:1.5rem; color:var(--accent-deep); line-height:1}
+.invcard .badge{position:absolute; top:16px; right:18px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--good); background:var(--good-soft); border:1px solid color-mix(in srgb,var(--good) 40%, transparent); border-radius:999px; padding:3px 9px}
+.invcard p{margin:10px 0 0; font-size:15px; line-height:1.5}
+.invcard .basis{margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--faint); line-height:1.5}
+.tbl-scroll{overflow-x:auto; margin:24px 0}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:560px}
+caption{caption-side:top; text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); margin-bottom:12px}
+th,td{text-align:left; padding:11px 14px; border-bottom:1px solid var(--hair); vertical-align:top}
+thead th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; border-bottom:1px solid var(--hair-strong)}
+td.k{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent-deep); white-space:nowrap}
+td .num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink)}
+tbody tr:hover{background:var(--surface-2)}
+footer{border-top:1px solid var(--hair); margin-top:30px; padding:34px 0 60px; color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px}
+@media (max-width:720px){ body{font-size:17px} .grid2{grid-template-columns:1fr} .trow{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:no-preference){
+  .reveal{opacity:0; transform:translateY(10px); transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1; transform:none}
+}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Hormigas · <b>Messenger</b> · the routing engine</div>
+    <button class="toggle" id="tg" aria-label="Toggle color theme">Theme</button>
+  </div>
+</header>
+
+<div class="bleed hero">
+  <p class="kicker">A message-router design whitepaper</p>
+  <h1>The heart that routes <em>every message</em></h1>
+  <p class="dek">One core, two chambers — an inbound router that turns a frame into durable truth, an outbound router that pumps it out as a live delivery — and the vessels around them that shed under pressure and slow the pulse when the load spikes.</p>
+  <div class="byline">
+    <span>Hormigas Messenger</span><span>·</span>
+    <span>two routers · stages &amp; ports</span><span>·</span>
+    <span>a self-tuning high-load kernel</span><span>·</span>
+    <span>companion to <a href="./">“The message you can afford to drop”</a></span><span>·</span>
+    <span>and <a href="encryption.html">the encryption paper</a></span>
+  </div>
+</div>
+<div class="bleed"><hr class="waterline"></div>
+
+<main>
+
+<div class="wrap">
+  <div class="abstract reveal">
+    <p class="tag">Abstract</p>
+    <p>Everything a client or the server ever sends is one <code>Message</code>, and the whole system turns on one design decision: <strong>the transport is dumb, the domain lives behind ports, and what happens to a message is decided by composing a fixed chain of tiny stages</strong> — never by branching business logic through the socket. The core is a <strong>two-chambered heart</strong>: an <em>inbound</em> router that turns a frame into durable state plus an acknowledgement, and an <em>outbound</em> router that turns a durable row into a live push. The entrance is a pure <strong>resolver</strong> that reads a message's type and returns a <em>route</em> — the name of a bead-string of stages. From there the router makes one promise and keeps it totally: the message <strong>traverses every stage to a terminal <code>FinalStage</code></strong>, its outcomes packed into a shared context, faults absorbed at each seam rather than thrown. A stage is a two-line interface that can map, filter, mediate, authorize, persist, cache, deliver, acknowledge, audit, group, coalesce, or fire a separate async process — assembled like beads. And the slow, bursty, dangerous work is pushed out to <strong>vessels</strong>: back-pressured publishers and coalescing batchers that live in a separate high-load module, are configured apart, carry their own metrics, and <strong>self-tune in production</strong> — shedding at the valves and slowing the poller's pulse under load, with a durable log underneath so slowing down never means losing. If the router is the heart, the publishers are the valves and vessels; this paper is the anatomy of both.</p>
+  </div>
+</div>
+
+<section class="wrap">
+  <span class="sec-label">00 — the brief</span>
+  <h2>The router is the core</h2>
+  <p class="lead">A messenger is a crowd of message kinds — chat, signaling, typing, presence, read receipts, system notices, group fan-out. The naïve design branches all of them through the transport. This one does the opposite.</p>
+  <ul class="notes">
+    <li><strong>The transport is dumb.</strong> The WebSocket handler validates a frame and stamps the authentic sender — and stops. It holds no business logic.</li>
+    <li><strong>The domain is behind ports.</strong> Durability, delivery, idempotency, the watermark, the send-guard — every one is a port the stages call, never an adapter they import.</li>
+    <li><strong>Capability is composed, not branched.</strong> A new message kind is a row in one table plus a chain of (mostly existing) stages. You add a bead to a string; you don't add an <code>if</code> to the socket.</li>
+  </ul>
+  <p class="pull">The router does not dispatch a message to a handler. It shepherds the message, in a context, through a fixed itinerary — to a definite end.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">01 — the heart</span>
+  <h2>Two routers, one anatomy</h2>
+  <p>There is exactly one router per direction, and each is fed not by a direct call but by a <strong>bounded, back-pressured publisher</strong> (§05). They have the same anatomy — resolve a route, run the message through a fixed chain of stages to <code>FinalStage</code>, packing every outcome into a shared context. The only difference is which beads are on the string.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 372" role="img" aria-label="Two routers form the core: an inbound router that turns a frame into durable state plus an ack, and an outbound router that turns a durable row into a live delivery. The WebSocket ingress publisher feeds the inbound router; the outbox poller and the fast-delivery hand-off feed the outbound router; both routers reach the domain only through ports." style="width:100%;height:auto;display:block">
+      <defs>
+        <marker id="ah1" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker>
+        <marker id="ah1a" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--accent)"/></marker>
+      </defs>
+      <!-- intake vessels -->
+      <rect x="18" y="44" width="188" height="74" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="34" y="74" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">WS ingress</text>
+      <text x="34" y="93" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">InboundPublisher</text>
+      <text x="34" y="109" font-family="'IBM Plex Mono',monospace" font-size="9.5" letter-spacing="1.4" fill="var(--faint)">INTAKE</text>
+
+      <rect x="18" y="256" width="188" height="74" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="34" y="286" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">outbox poller</text>
+      <text x="34" y="305" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="var(--accent-deep)">RoutingBackpressure</text>
+      <text x="34" y="321" font-family="'IBM Plex Mono',monospace" font-size="9.5" letter-spacing="1.4" fill="var(--faint)">INTAKE</text>
+
+      <!-- heart: two chambers -->
+      <rect x="256" y="30" width="230" height="120" rx="14" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text x="276" y="66" font-family="'Newsreader',serif" font-size="21" fill="var(--accent-deep)">InboundRouter</text>
+      <text x="276" y="90" font-family="'IBM Plex Mono',monospace" font-size="13" fill="var(--ink)">.routeIn</text>
+      <text x="276" y="116" font-family="'IBM Plex Sans',sans-serif" font-size="12.5" fill="var(--muted)">frame → durable truth</text>
+      <text x="276" y="134" font-family="'IBM Plex Sans',sans-serif" font-size="12.5" fill="var(--muted)">+ a SENT ack — the chamber fills</text>
+
+      <rect x="256" y="222" width="230" height="120" rx="14" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text x="276" y="258" font-family="'Newsreader',serif" font-size="21" fill="var(--accent-deep)">OutboundRouter</text>
+      <text x="276" y="282" font-family="'IBM Plex Mono',monospace" font-size="13" fill="var(--ink)">.routeOut</text>
+      <text x="276" y="308" font-family="'IBM Plex Sans',sans-serif" font-size="12.5" fill="var(--muted)">durable row → live push</text>
+      <text x="276" y="326" font-family="'IBM Plex Sans',sans-serif" font-size="12.5" fill="var(--muted)">idempotent — the chamber pumps</text>
+
+      <!-- the fly-off vessel, between the chambers -->
+      <rect x="300" y="160" width="142" height="52" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-dasharray="4 3"/>
+      <text x="316" y="184" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">FastDeliveryPublisher</text>
+      <text x="316" y="200" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">the fly-off artery</text>
+
+      <!-- ports organ -->
+      <rect x="560" y="44" width="322" height="284" rx="14" fill="var(--surface)" stroke="var(--hair)"/>
+      <text x="584" y="76" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="1.6" fill="var(--accent)">PORTS — THE ORGANS</text>
+      <g font-family="'IBM Plex Mono',monospace" font-size="13" fill="var(--ink)">
+        <text x="584" y="114">OutboxManager</text>
+        <text x="584" y="144">DeliveryChannel</text>
+        <text x="584" y="174">IdempotencyManager</text>
+        <text x="584" y="204">TetrisMarker</text>
+        <text x="584" y="234">SendGuard · GroupSend</text>
+        <text x="584" y="264">ReadReceipts</text>
+      </g>
+      <text x="584" y="300" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--faint)">the stages call these — never an adapter</text>
+
+      <!-- arrows -->
+      <line x1="206" y1="81"  x2="252" y2="81"  stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah1a)"/>
+      <text x="210" y="72" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--accent-deep)">publish</text>
+      <line x1="206" y1="293" x2="252" y2="288" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ah1a)"/>
+      <text x="210" y="284" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--accent-deep)">poll</text>
+
+      <line x1="371" y1="150" x2="371" y2="158" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah1)"/>
+      <text x="380" y="150" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">hand off</text>
+      <line x1="371" y1="212" x2="371" y2="220" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah1)"/>
+
+      <line x1="486" y1="88"  x2="556" y2="120" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah1)"/>
+      <line x1="486" y1="284" x2="556" y2="230" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah1)"/>
+      <text x="498" y="270" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">via ports only</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 1</span> — two chambers, one shape. Three vessels feed the heart; both chambers reach the domain only through ports.</figcaption>
+</figure>
+<section class="wrap">
+  <p>The inbound chamber carries one hot-path detail worth naming, because throughput lives here: the ingest chain runs application-scoped stages on reactive clients and needs <em>no</em> propagated thread context, so it turns per-message context capture off entirely.</p>
+  <pre class="code"><span class="c">// MessageInboundRouter.routeIn — a saturated JFR showed ~30% of CPU in per-message SmallRye</span>
+<span class="c">// context capture (SlowCapturedContextState); disabling it is pure ingest headroom.</span>
+<span class="v">@CurrentThreadContext</span>(propagated = {}, unchanged = ThreadContext.ALL_REMAINING)
+public Uni&lt;MessageEnvelope&lt;Message&gt;&gt; routeIn(Message message) { <span class="c">…</span> }</pre>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">02 — the entrance</span>
+  <h2>A resolver reads the type and picks the route</h2>
+  <p>A message carries a <strong>type</strong>, not logic. The entrance to the heart is a pure resolver that reads the type and returns a <strong>route</strong> — a <code>PipelineType</code>, which is nothing but <em>the name of a fixed string of stages</em>. No DB, no content branching, no business rules: an <code>EnumMap</code> lookup, and <code>SKIP</code> straight to Final for anything malformed.</p>
+  <pre class="code"><span class="c">// MessagePipelineResolver — a pure EnumMap&lt;MessageType, PipelineType&gt;.</span>
+CHAT_IN   <span class="v">→</span> INBOUND_PERSISTENT      SIGNAL_IN <span class="v">→</span> INBOUND_CACHED      READ_IN  <span class="v">→</span> READ
+CHAT_ACK  <span class="v">→</span> ACK_PERSISTENT          TYPING_IN <span class="v">→</span> INBOUND_CACHED      CHAT_OUT <span class="v">→</span> OUTBOUND_CACHED
+SYSTEM_OUT <span class="v">→</span> OUTBOUND_TRANSIENT     PRESENT_* <span class="v">→</span> INBOUND_DIRECT      <span class="r">?</span> / null <span class="v">→</span> SKIP</pre>
+  <p>There is exactly one thing the pure table cannot decide — <strong>DIRECT vs GROUP</strong> — because that needs a lookup. So the router <em>refines</em> the route at runtime through a neutral <code>ConversationResolver</code> port (one cached <code>UNION</code> over the direct and group tables): a persistent or typing frame into a group promotes to the group pipeline. The lookup runs only for the two group-capable types; everything else short-circuits.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 230" role="img" aria-label="The entrance resolves a route: a message carries a type; a pure EnumMap maps the type to a PipelineType; for the two group-capable types a cached conversation lookup refines DIRECT versus GROUP; the result is a fixed string of stages. A malformed or unknown type routes straight to SKIP." style="width:100%;height:auto;display:block">
+      <defs><marker id="ah2" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker></defs>
+      <rect x="18"  y="44" width="176" height="72" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="34" y="76"  font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">Message</text>
+      <text x="34" y="96"  font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">carries a type,</text>
+      <text x="34" y="112" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">not logic</text>
+
+      <rect x="232" y="44" width="196" height="72" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text x="248" y="76"  font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--accent-deep)">resolve</text>
+      <text x="248" y="96"  font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">EnumMap:</text>
+      <text x="248" y="112" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">type → PipelineType</text>
+
+      <rect x="466" y="44" width="196" height="72" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="482" y="76"  font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">refine</text>
+      <text x="482" y="96"  font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">ConversationResolver</text>
+      <text x="482" y="112" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">DIRECT vs GROUP (cached)</text>
+
+      <rect x="700" y="44" width="182" height="72" rx="10" fill="var(--surface)" stroke="var(--accent)"/>
+      <text x="716" y="76"  font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--accent-deep)">the route</text>
+      <text x="716" y="96"  font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">a fixed string</text>
+      <text x="716" y="112" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">of stages</text>
+
+      <line x1="194" y1="80" x2="230" y2="80" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah2)"/>
+      <text x="196" y="72" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">type</text>
+      <line x1="428" y1="80" x2="464" y2="80" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah2)"/>
+      <line x1="662" y1="80" x2="698" y2="80" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah2)"/>
+      <text x="470" y="150" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">group-capable types only</text>
+
+      <!-- SKIP branch -->
+      <line x1="330" y1="116" x2="330" y2="168" stroke="var(--faint)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ah2)"/>
+      <text x="342" y="148" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">malformed / null</text>
+      <rect x="232" y="170" width="196" height="42" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="248" y="196" font-family="'IBM Plex Mono',monospace" font-size="12.5" fill="var(--muted)">SKIP → straight to Final</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 2</span> — choosing what happens to a message is a table lookup, not a branch tree.</figcaption>
+</figure>
+
+<section class="wrap">
+  <span class="sec-label">03 — the guarantee</span>
+  <h2>Every route runs to Final, reacting to errors, packing the message in a context</h2>
+  <p>Once a route is chosen, the router's promise is simple and total: the message <strong>traverses every stage of that route and reaches <code>FinalStage</code></strong> — whatever happens on the way. It folds the message into a <code>RouterContext</code> and threads it through the stages, checking for an error at each seam and short-circuiting to Final on rejection rather than throwing.</p>
+  <pre class="code"><span class="c">// MessageInboundRouter.run — the DIRECT chat route, assembled as beads.</span>
+case INBOUND_PERSISTENT -> authorizationStage.apply(context)
+    .onItem().transformToUni(ctx -> ctx.hasError()
+        ? finalStage.apply(ctx)                                <span class="c">// reject → straight to Final</span>
+        : outboxStage.apply(ctx)                               <span class="c">// persist  (history + outbox)</span>
+            .onItem().transformToUni(ackStage::apply)          <span class="c">// ack SENT to the sender</span>
+            .onItem().transformToUni(asyncHandoffStage::apply) <span class="c">// hand delivery off (fly away)</span>
+            .onItem().transformToUni(finalStage::apply));      <span class="c">// done</span></pre>
+  <p>The <code>RouterContext</code> is the <strong>bag that travels the string of beads</strong> — the payload plus four per-concern outcomes, each a <code>StageResult</code>. <code>FinalStage</code> reads the one that defines <em>done</em> for the strategy and emits a terminal <code>MessageEnvelope</code>.</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>The four outcomes packed into the context — who sets each, and what it means.</caption>
+      <thead><tr><th>Outcome</th><th>Set by</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td class="k">persisted</td><td>Outbox / GroupOutbox</td><td>written to history + outbox</td></tr>
+        <tr><td class="k">delivered</td><td>Delivery</td><td>pushed to the recipient's live session</td></tr>
+        <tr><td class="k">cached</td><td>Cache / CleanCache</td><td>present in the idempotency / redelivery cache</td></tr>
+        <tr><td class="k">acknowledged</td><td>Ack / TetrisAck</td><td>SENT-ack sent · recipient ACK processed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Two invariants make the guarantee real: <strong>a stage never throws out of the chain</strong> — every stage ends <code>.onFailure().invoke(setError).recoverWithItem(ctx)</code>, so a fault is <em>recorded on the context</em> and the same context flows on; and <strong>the route always terminates at <code>FinalStage</code></strong> — error or success, group or 1:1, every arm ends there, so every message produces a definite <code>processed = true/false</code> and nothing dangles.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 214" role="img" aria-label="A RouterContext walks the stage chain — Authorize, Outbox (sets persisted), Ack (sets acknowledged), AsyncHandoff — and ends at FinalStage. A stage never throws: on failure it records the error on the context and recovers to it, and the route short-circuits straight to Final, which always terminates the message." style="width:100%;height:auto;display:block">
+      <defs>
+        <marker id="ah3" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker>
+        <marker id="ah3c" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--amber-line)"/></marker>
+      </defs>
+      <!-- pipeline nodes -->
+      <g font-family="'IBM Plex Mono',monospace">
+        <rect x="18"  y="34" width="150" height="66" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="34" y="64" font-size="13" font-weight="500" fill="var(--ink)">Authorize</text>
+        <text x="34" y="84" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">member · not-blocked</text>
+
+        <rect x="192" y="34" width="150" height="66" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="208" y="64" font-size="13" font-weight="500" fill="var(--ink)">Outbox</text>
+        <text x="208" y="84" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--good)">persisted ✔</text>
+
+        <rect x="366" y="34" width="150" height="66" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="382" y="64" font-size="13" font-weight="500" fill="var(--ink)">Ack</text>
+        <text x="382" y="84" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--good)">acknowledged ✔</text>
+
+        <rect x="540" y="34" width="150" height="66" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="556" y="64" font-size="13" font-weight="500" fill="var(--ink)">AsyncHandoff</text>
+        <text x="556" y="84" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">fly delivery off</text>
+
+        <rect x="714" y="34" width="168" height="66" rx="10" fill="var(--good-soft)" stroke="var(--good)"/>
+        <text x="730" y="64" font-size="13" font-weight="500" fill="var(--ink)">Final</text>
+        <text x="730" y="84" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">done = persisted</text>
+      </g>
+      <!-- forward arrows -->
+      <line x1="168" y1="67" x2="190" y2="67" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah3)"/>
+      <line x1="342" y1="67" x2="364" y2="67" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah3)"/>
+      <line x1="516" y1="67" x2="538" y2="67" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah3)"/>
+      <line x1="690" y1="67" x2="712" y2="67" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah3)"/>
+      <!-- error short-circuit -->
+      <polyline points="93,100 93,168 798,168 798,102" fill="none" stroke="var(--amber-line)" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#ah3c)"/>
+      <text x="360" y="162" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--amber)">ctx.hasError() → recover to the same context → short-circuit to Final</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 3</span> — the context walks the beads; a fault is packed in and routed to Final, not thrown.</figcaption>
+</figure>
+
+<section class="wrap">
+  <span class="sec-label">04 — the stage</span>
+  <h2>A two-line interface that can be anything</h2>
+  <p>Every bead on every string implements one interface. That is the entire extension surface of the system:</p>
+  <pre class="code">public interface PipelineStage&lt;T&gt; {
+    Uni&lt;T&gt; apply(T ctx);   <span class="c">// do ONE thing · record the outcome on the context · never throw</span>
+}</pre>
+  <p>A stage is a CDI bean the router injects and threads into chains. Behind that two-line contract, a stage can be <strong>anything a step in a message's life needs to be</strong> — and the catalogue already spans the lot:</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>What a stage can do — and the bead that already does it. You compose capability by stringing them.</caption>
+      <thead><tr><th>A stage can…</th><th>…realised by</th></tr></thead>
+      <tbody>
+        <tr><td class="k">map / normalise</td><td>InboundPrototype — fresh server ULID, IN→OUT flip, server timestamp</td></tr>
+        <tr><td class="k">filter / mediate / authorize</td><td>AuthorizationStage, GroupAuthorizeStage — membership + not-blocked; <strong>re-stamps the authentic recipient</strong> (client value never trusted)</td></tr>
+        <tr><td class="k">persist</td><td>OutboxStage (atomic history+outbox); GroupOutboxStage (the multiplier: 1 log + N outbox)</td></tr>
+        <tr><td class="k">deliver / send</td><td>DeliveryStage (live WS push with backoff); AckStage (build + send the sender's SENT ack)</td></tr>
+        <tr><td class="k">idempotency / cache</td><td>CacheStage (guard double-delivery); CleanCacheStage (evict on ACK)</td></tr>
+        <tr><td class="k">audit / mark / watermark</td><td>TetrisSentStage / TetrisAckStage (pin &amp; advance the GC watermark); RouterLogger (structured in/out audit)</td></tr>
+        <tr><td class="k">group / fan-out</td><td>GroupOutboxStage, GroupHandoffStage, GroupTypingStage — N recipients behind a GroupSend port</td></tr>
+        <tr><td class="k">fire a separate async process</td><td>AsyncHandoffStage (delivery flies off); OfflineCallPushStage (offline call push)</td></tr>
+        <tr><td class="k">read-model side-effect</td><td>ReadStage — mark READ + push READ_OUT</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>You <strong>compose capability like beads on a string</strong> — chat is <code>authorize → persist → ack → hand-off</code>; signaling is <code>authorize → deliver → cache</code>; a recipient ACK is <code>tetris-ack → clean-cache</code>. The router never grows business logic; it grows a switch arm. A concrete bead is exactly as small as the contract promises:</p>
+  <pre class="code"><span class="c">// AsyncHandoffStage — "fly the delivery off the inbound chain." Two lines of body.</span>
+<span class="v">@ApplicationScoped</span> <span class="v">@RequiredArgsConstructor</span>
+public class AsyncHandoffStage implements PipelineStage&lt;RouterContext&lt;Message&gt;&gt; {
+    private final HandoffSubPipeline handoff;
+    public Uni&lt;RouterContext&lt;Message&gt;&gt; apply(RouterContext&lt;Message&gt; ctx) { return handoff.handoff(ctx); }
+}</pre>
+  <p>Everything a stage touches — durability, idempotency, the watermark, delivery — is a <strong>port</strong>, so the beads stay pure and the substrate stays swappable. An ArchUnit rule fails the build if a router ever depends on a business port or the delivery publisher, so this stays honest.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">05 — the vessels</span>
+  <h2>The valves and vessels — a separate high-load kernel</h2>
+  <p>A stage does its one thing and returns. But some of that "one thing" is slow, bursty, or fire-and-forget: delivering to a laggy socket, writing N rows to Postgres, pushing a Kafka notification to an offline user. The router refuses to pay those costs on the thread keeping ingest fast — so the heavy work is handed to <strong>vessels</strong>, and the vessels live in their own module, <code>org.hormigas:messenger-hl</code>, wired in at a thin edge. The core and domain never see Micrometer, Quarkus, or the kernel internals; the vessels are <strong>configured apart, carry their own metrics, and self-tune</strong>.</p>
+  <p class="pull">If the router is the heart, the publishers are the valves and vessels — pumping work into the chambers, carrying side-work off them, and clamping down when the pressure rises.</p>
+  <p>Every vessel is one of two primitives. The first is the <strong>back-pressured publisher — a wheel</strong>: a bounded queue on one side and, on the other, a fixed number of parallel continuations pulling from it (<code>transformToUni(sink).merge(concurrency)</code>). Producers call <code>publish(item)</code>; when the queue is full it returns <code>false</code> — the caller <em>sheds</em> rather than blocking.</p>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 300" role="img" aria-label="A back-pressured publisher is a wheel: a producer publishes into a bounded queue; a merge over N concurrent continuations pulls from it and runs each item through a sink. When the queue is full, publish returns false and the caller sheds. Each item recovers on failure, and a terminal stream error re-subscribes with backoff, so the wheel never permanently dies." style="width:100%;height:auto;display:block">
+      <defs><marker id="ah4" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker>
+        <marker id="ah4s" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--amber-line)"/></marker></defs>
+      <!-- shed -->
+      <rect x="316" y="18" width="236" height="40" rx="9" fill="var(--amber-soft)" stroke="var(--amber-line)"/>
+      <text x="334" y="43" font-family="'IBM Plex Mono',monospace" font-size="12" fill="var(--amber)">shed — publish() = false</text>
+      <!-- producer -->
+      <rect x="20" y="120" width="140" height="64" rx="10" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="36" y="150" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">producer</text>
+      <text x="36" y="169" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--muted)">publish(item)</text>
+      <!-- bounded queue -->
+      <rect x="196" y="110" width="118" height="84" rx="8" fill="var(--surface)" stroke="var(--hair-strong)"/>
+      <line x1="196" y1="131" x2="314" y2="131" stroke="var(--hair)"/><line x1="196" y1="152" x2="314" y2="152" stroke="var(--hair)"/><line x1="196" y1="173" x2="314" y2="173" stroke="var(--hair)"/>
+      <text x="212" y="210" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--faint)">bounded queue</text>
+      <!-- the wheel -->
+      <circle cx="452" cy="152" r="54" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>
+      <g stroke="var(--accent)" stroke-width="1.4">
+        <line x1="452" y1="104" x2="452" y2="116"/><line x1="452" y1="188" x2="452" y2="200"/>
+        <line x1="404" y1="152" x2="416" y2="152"/><line x1="488" y1="152" x2="500" y2="152"/>
+        <line x1="418" y1="118" x2="426" y2="126"/><line x1="478" y1="178" x2="486" y2="186"/>
+        <line x1="418" y1="186" x2="426" y2="178"/><line x1="478" y1="126" x2="486" y2="118"/>
+      </g>
+      <text x="452" y="149" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12.5" font-weight="500" fill="var(--accent-deep)">merge</text>
+      <text x="452" y="165" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="var(--muted)">(concurrency)</text>
+      <!-- continuations / sinks -->
+      <g font-family="'IBM Plex Mono',monospace">
+        <rect x="632" y="40"  width="240" height="52" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="648" y="62"  font-size="12.5" fill="var(--ink)">sink → routeIn / routeOut</text>
+        <text x="648" y="80"  font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--good)">recoverWithNull() per item</text>
+        <rect x="632" y="126" width="240" height="52" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="648" y="148" font-size="12.5" fill="var(--ink)">sink → …</text>
+        <text x="648" y="166" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">one continuation of N</text>
+        <rect x="632" y="212" width="240" height="52" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+        <text x="648" y="234" font-size="12.5" fill="var(--ink)">sink → …N</text>
+        <text x="648" y="252" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">side-effect</text>
+      </g>
+      <!-- arrows -->
+      <line x1="160" y1="152" x2="194" y2="152" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah4)"/>
+      <text x="160" y="143" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">publish</text>
+      <line x1="314" y1="152" x2="394" y2="152" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah4)"/>
+      <line x1="500" y1="128" x2="630" y2="70"  stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah4)"/>
+      <line x1="506" y1="152" x2="630" y2="152" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah4)"/>
+      <line x1="500" y1="176" x2="630" y2="234" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah4)"/>
+      <!-- shed dashed -->
+      <path d="M110 120 C 150 70, 250 40, 314 34" fill="none" stroke="var(--amber-line)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah4s)"/>
+      <text x="150" y="96" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--amber)">queue full → false</text>
+      <!-- immortal note -->
+      <text x="452" y="240" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="var(--faint)">terminal error → re-subscribe (backoff) — immortal</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 4</span> — the wheel: shed, don't block; isolate per item; never permanently die.</figcaption>
+</figure>
+<section class="wrap">
+  <div class="callout">
+    <p class="tag">the second primitive — the coalescing vessel</p>
+    <p>A <strong>batcher</strong> (<code>GroupCommitBatcher</code>, <code>CoalescingBatcher</code>) accumulates items into a buffer that closes on <strong>size or time</strong> (<code>max-size</code> / <code>linger-ms</code>), then processes the buffer as <em>one</em> unit — a single transaction, or a single keep-latest merge — across <code>max-concurrent-batches</code>, and <code>drain(timeout)</code> on shutdown. Group-commit turns a per-message cost into a per-batch cost; coalescing turns a storm of updates for one key into one. The persist path uses it so a flood of chats commits as a few large <code>saveBatch</code> transactions, and a poisoned batch is retried <em>row by row</em> so one bad row can't fail its 255 neighbours.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">06 — the catalogue</span>
+  <h2>Intake, offload, coalesce — the standard models</h2>
+  <p>Vessels serve exactly three purposes: <strong>intake</strong> (give a chamber its inflow), <strong>offload</strong> (carry an async side-job off a stage so the pipeline flies on), and <strong>coalesce</strong> (buffer a storm into few commits). Here is the real set.</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>The vessels — the two intake valves, the fly-off artery, the coalescing buffers, and the Kafka capillary that reaches an offline user. Knobs under <code>processing.*</code>.</caption>
+      <thead><tr><th>Vessel</th><th>Role</th><th>Primitive</th><th>Feeds / does</th></tr></thead>
+      <tbody>
+        <tr><td class="k">InboundPublisher</td><td><span class="num">intake</span></td><td>wheel</td><td>WS frames → <code>routeIn</code></td></tr>
+        <tr><td class="k">RoutingBackpressurePublisher</td><td><span class="num">intake</span></td><td>wheel</td><td>durable outbox rows (poller) → <code>routeOut</code> — <strong>the one vessel that drives the reflex (§07)</strong></td></tr>
+        <tr><td class="k">FastDeliveryPublisher</td><td><span class="num">offload</span></td><td>wheel</td><td>AsyncHandoff → <code>routeOut</code> on its <em>own</em> subscription — live delivery decoupled from persist</td></tr>
+        <tr><td class="k">InboundPersistBatcher</td><td><span class="num">coalesce</span></td><td>group-commit</td><td>persist stage → one <code>saveBatch</code> tx of N; poison rows retried individually</td></tr>
+        <tr><td class="k">OfflinePusherBatcher → KafkaOfflineEventPublisher</td><td><span class="num">offload + coalesce</span></td><td>coalescing → Kafka</td><td>undelivered-to-offline → one Kafka push per <code>(recipient,conversation,call)</code> → topic <code>chat.offline.notify</code></td></tr>
+        <tr><td class="k">ReadReceiptBatcher</td><td><span class="num">coalesce</span></td><td>coalescing</td><td>write-behind receipts (keep MAX readId) → 1 UPDATE + 1 coalesced <code>READ_OUT</code></td></tr>
+        <tr><td class="k">AttachmentReclaimPublisher</td><td><span class="num">offload</span></td><td>wheel</td><td>drain <code>PENDING_DELETE</code> off the delete hot-path → delete object + mark ORPHANED</td></tr>
+        <tr><td class="k">RosterEventFanout</td><td><span class="num">offload</span></td><td>reuses FastDelivery</td><td>group roster → ephemeral <code>SERVICE_OUT</code> per member</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Read the anatomy across the table: the two <strong>intake</strong> wheels are the heart's inflow valves; <strong>FastDelivery</strong> is the artery the inbound chamber pumps into and then <em>lets go</em> — the message flies off on the wheel's own subscription while inbound returns for the next frame; the <strong>Kafka offline-push</strong> vessel is the capillary carrying a notification to a user who isn't even connected; and the <strong>coalescing</strong> batchers turn a flood into a steady drip, so Postgres and Redis see few, large operations instead of many small ones. The offload is always safe because the outbox row is written <em>before</em> the hand-off — a shed live delivery is simply re-delivered by the poller.</p>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">07 — the reflex</span>
+  <h2>How the vessels self-tune under load</h2>
+  <p>The vessels don't just shed; the outbound path <strong>regulates its own pulse</strong>. A closed loop — an autonomic reflex — watches the outbound wheel and <em>slows the poller</em> when delivery backs up, then eases it back as things clear. It is the one genuinely self-tuning mechanism in the engine, and it is worth being precise about, including what it does <em>not</em> do.</p>
+  <ul class="notes">
+    <li><strong>Signal.</strong> Only the outbound wheel carries an event provider. On a shed it bumps a <code>dropSplash</code> and fires a health event; on each clean delivery it decrements the splash and fires an <em>ease-back</em> event — but only while a splash is outstanding (<strong>hysteresis</strong>: the interval eases back the same number of notches it grew). The fast-path and inbound wheels shed <em>silently</em> — they tune nothing.</li>
+    <li><strong>Regulate.</strong> An <code>@ObservesAsync</code> observer feeds a <code>FeedbackRegulator</code>. Dropped → <code>interval = min(max, interval × 2.0)</code>; clean → <code>interval = max(base, interval × 0.5)</code>. Base <strong>1s</strong>, cap <strong>30s</strong>.</li>
+    <li><strong>Actuate.</strong> The <code>OutboxPoller</code> delays each fetch by the current interval. So the fixed 500ms tick is <em>augmented</em> by an adaptive extra delay: under sustained sheds the poller backs off — 1s up to 30s — and stops refilling a queue that is already draining slowly.</li>
+  </ul>
+</section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 316" role="img" aria-label="A closed feedback loop regulates the poller. The outbound wheel fires a health event on a shed (drop-splash up) and an ease-back event on a clean delivery. An async observer feeds a regulator that grows the poll interval by two on a drop, up to thirty seconds, and decays it by half on clean, down to one second. The poller delays each fetch by that interval, feeding the wheel more slowly under load and faster as it clears." style="width:100%;height:auto;display:block">
+      <defs><marker id="ah5" markerWidth="10" markerHeight="9" refX="8" refY="3.2" orient="auto"><path d="M0 0 L8.5 3.2 L0 6.4 Z" fill="var(--accent)"/></marker></defs>
+      <!-- A outbound wheel -->
+      <rect x="40" y="40" width="270" height="92" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/>
+      <text x="60" y="72" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--accent-deep)">outbound wheel</text>
+      <text x="60" y="93" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">shed → dropSplash++</text>
+      <text x="60" y="111" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">clean delivery → dropSplash--</text>
+      <!-- B health event -->
+      <rect x="590" y="40" width="270" height="92" rx="12" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="610" y="72" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">OutgoingHealthEvent</text>
+      <text x="610" y="93" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">dropped=true · ease-back</text>
+      <text x="610" y="111" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">hysteresis: ease back what it grew</text>
+      <!-- C regulator -->
+      <rect x="590" y="184" width="270" height="92" rx="12" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="610" y="216" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">FeedbackRegulator</text>
+      <text x="610" y="237" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">drop: interval ×2 → max 30s</text>
+      <text x="610" y="255" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">clean: interval ×0.5 → min 1s</text>
+      <!-- D poller -->
+      <rect x="40" y="184" width="270" height="92" rx="12" fill="var(--surface-2)" stroke="var(--hair-strong)"/>
+      <text x="60" y="216" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="500" fill="var(--ink)">OutboxPoller</text>
+      <text x="60" y="237" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">delay each fetch by the interval</text>
+      <text x="60" y="255" font-family="'IBM Plex Sans',sans-serif" font-size="12" fill="var(--muted)">+ skip-while-busy</text>
+      <!-- loop arrows -->
+      <line x1="310" y1="86"  x2="588" y2="86"  stroke="var(--accent)" stroke-width="1.7" marker-end="url(#ah5)"/>
+      <text x="360" y="76" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">shed / clean → fire event</text>
+      <line x1="725" y1="132" x2="725" y2="182" stroke="var(--accent)" stroke-width="1.7" marker-end="url(#ah5)"/>
+      <text x="735" y="162" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">@ObservesAsync</text>
+      <line x1="588" y1="230" x2="312" y2="230" stroke="var(--accent)" stroke-width="1.7" marker-end="url(#ah5)"/>
+      <text x="360" y="220" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">grow / decay the interval</text>
+      <line x1="175" y1="182" x2="175" y2="134" stroke="var(--accent)" stroke-width="1.7" marker-end="url(#ah5)"/>
+      <text x="185" y="162" font-family="'IBM Plex Mono',monospace" font-size="11" fill="var(--accent-deep)">refill slower / faster</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 5</span> — the reflex: shed at the valve, slow the pulse at the poller, ease back with hysteresis.</figcaption>
+</figure>
+<section class="wrap">
+  <p>There is a second, cruder lever on the same poller: <strong>skip-while-busy</strong>. Before fetching, the poller checks whether the outbound wheel still has work and <em>skips the fetch entirely</em> if so — so peak in-flight is bounded near one <code>outbound.batch-size</code> regardless of cadence. The system's answer to a load spike is therefore never to fall over and never to buffer unboundedly: it is to <strong>shed at the valves and slow the pulse at the poller</strong> until the pressure clears — pure back-pressure, with a durable log underneath so slowing down never means losing.</p>
+  <div class="callout warn">
+    <p class="tag">honest boundaries — so no one over-reads the reflex</p>
+    <p>It tunes <strong>poll cadence only</strong>, never concurrency — <code>delivery-concurrency</code> / <code>merge(n)</code> are static config; the reflex changes <em>how often</em> the heart refills, not <em>how hard</em> it pumps. Only the <strong>outbound / poller</strong> vessel drives the loop; the <strong>fast-path does not self-throttle</strong> — when full it sheds silently and the durable outbox + poller are its safety net (the row is already committed, so a shed live delivery is re-delivered later). And the adaptive poller is prod-profile only.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <span class="sec-label">08 — what holds</span>
+  <h2>The properties that fall out of the shape</h2>
+  <p>Nothing above is bespoke cleverness; it is the same few moves — <em>resolve a route, run beads to Final, offload to a vessel, let the vessel shed and self-tune</em> — applied consistently. What the shape buys, each on a concrete mechanism:</p>
+</section>
+<figure class="wide reveal">
+  <div class="inv">
+    <div class="invcard"><div class="badge">✓ by design</div><div class="id">R<sub>1</sub></div><p><strong>Throughput ⟂ latency.</strong></p><p class="basis">Inbound persist is decoupled from delivery (the hand-off); per-message DB cost is decoupled from arrival rate (group-commit). A slow recipient can't slow the sender's ack.</p></div>
+    <div class="invcard"><div class="badge">✓ durable</div><div class="id">R<sub>2</sub></div><p><strong>No loss under back-pressure.</strong></p><p class="basis">Every vessel may shed, and every shed has a durable net — the outbox, the catch-up poller, the reconnect re-push, the idempotency cache. Persist-before-hand-off is the linchpin.</p></div>
+    <div class="invcard"><div class="badge">✓ isolated</div><div class="id">R<sub>3</sub></div><p><strong>Failure isolation, top to bottom.</strong></p><p class="basis">Stages recover to their context; wheels recover per item and re-subscribe with backoff; a poisoned persist batch retries row-by-row. No single message can down a shared stream.</p></div>
+    <div class="invcard"><div class="badge">✓ adaptive</div><div class="id">R<sub>4</sub></div><p><strong>Self-regulation.</strong></p><p class="basis">The reflex trades latency for stability under sustained load automatically, with hysteresis, and hands the operator the whole story in metrics on the vessels.</p></div>
+    <div class="invcard"><div class="badge">✓ composed</div><div class="id">R<sub>5</sub></div><p><strong>Capability by composition.</strong></p><p class="basis">A new kind is a resolver row + a chain of mostly-existing stages; fan-out lives behind a port. An ArchUnit rule fails the build if a router depends on a business port or the publisher.</p></div>
+  </div>
+  <figcaption><span class="fignum">Fig 6</span> — the payoff. A composable core, and a self-tuning high-load kernel around it.</figcaption>
+</figure>
+<section class="wrap">
+  <p style="max-width:var(--measure); color:var(--muted); font-size:14.5px">Stated plainly: <strong>one <code>Message</code>, one resolver, two routers, a string of stages, and a family of vessels.</strong> The heart stays small and clean; the vessels do the bursty, slow, dangerous work off to the side and tell you how they're coping. That division — <em>a composable core, and a self-tuning high-load kernel around it</em> — is the whole design. The delivery substrate the outbound chamber feeds (outbox, poller, watermark GC, and its Kafka-portable offset model) is the companion delivery paper; the end-to-end encryption laid over the same transport is <a href="encryption.html">the encryption paper</a>.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Hormigas Messenger — the routing engine</span>
+    <span>two routers · resolver · stages &amp; ports · back-pressured vessels · a self-tuning poll reflex</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, key="router-wp-theme", btn=document.getElementById("tg");
+  function sys(){ return matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light"; }
+  var saved=null; try{ saved=localStorage.getItem(key); }catch(e){}
+  if(saved==="dark"||saved==="light") root.setAttribute("data-theme",saved);
+  function cur(){ return root.getAttribute("data-theme") || sys(); }
+  btn.addEventListener("click",function(){
+    var next = cur()==="dark" ? "light":"dark";
+    root.setAttribute("data-theme",next);
+    try{ localStorage.setItem(key,next); }catch(e){}
+  });
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); obs.unobserve(en.target);} });
+    },{threshold:.1});
+    document.querySelectorAll(".reveal").forEach(function(el){ obs.observe(el); });
+  }
+})();
+</script>
