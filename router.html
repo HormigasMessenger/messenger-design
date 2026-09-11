@@ -147,7 +147,7 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
 </header>
 
 <div class="bleed hero">
-  <p class="kicker">A message-router design whitepaper</p>
+  <p class="kicker">Composable pipelines · bounded vessels · adaptive back-pressure</p>
   <h1>The heart that routes <em>every message</em></h1>
   <p class="dek">One core, two chambers — an inbound router that turns a frame into durable truth, an outbound router that pumps it out as a live delivery — and the vessels around them that shed under pressure and slow the pulse when the load spikes.</p>
   <div class="byline">
@@ -165,7 +165,7 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
 <div class="wrap">
   <div class="abstract reveal">
     <p class="tag">Abstract</p>
-    <p>Everything a client or the server ever sends is one <code>Message</code>, and the whole system turns on one design decision: <strong>the transport is dumb, the domain lives behind ports, and what happens to a message is decided by composing a fixed chain of tiny stages</strong> — never by branching business logic through the socket. The core is a <strong>two-chambered heart</strong>: an <em>inbound</em> router that turns a frame into durable state plus an acknowledgement, and an <em>outbound</em> router that turns a durable row into a live push. The entrance is a pure <strong>resolver</strong> that reads a message's type and returns a <em>route</em> — the name of a bead-string of stages. From there the router makes one promise and keeps it totally: the message <strong>traverses every stage to a terminal <code>FinalStage</code></strong>, its outcomes packed into a shared context, faults absorbed at each seam rather than thrown. A stage is a two-line interface that can map, filter, mediate, authorize, persist, cache, deliver, acknowledge, audit, group, coalesce, or fire a separate async process — assembled like beads. And the slow, bursty, dangerous work is pushed out to <strong>vessels</strong>: back-pressured publishers and coalescing batchers that live in a separate high-load module, are configured apart, carry their own metrics, and <strong>self-tune in production</strong> — shedding at the valves and slowing the poller's pulse under load, with a durable log underneath so slowing down never means losing. If the router is the heart, the publishers are the valves and vessels; this paper is the anatomy of both.</p>
+    <p>Every routed application event enters the core as one <code>Message</code>, and the whole system turns on one design decision: <strong>the transport is dumb, the domain lives behind ports, and what happens to a message is decided by composing a fixed chain of tiny stages</strong> — never by branching business logic through the socket. The core is a <strong>two-chambered heart</strong>: an <em>inbound</em> router that turns a frame into durable state plus an acknowledgement, and an <em>outbound</em> router that turns a durable row into a live push. The entrance is a pure <strong>resolver</strong> that reads a message's type and returns a <em>route</em> — the name of a bead-string of stages. From there the router makes one promise and keeps it totally: the message <strong>traverses every stage to a terminal <code>FinalStage</code></strong>, its outcomes packed into a shared context, faults absorbed at each seam rather than thrown. A stage is a two-line interface that can map, filter, mediate, authorize, persist, cache, deliver, acknowledge, audit, group, coalesce, or fire a separate async process — assembled like beads. And the slow, bursty, dangerous work is pushed out to <strong>vessels</strong>: back-pressured publishers and coalescing batchers that live in a separate high-load module, are configured apart, carry their own metrics, and <strong>self-tune in production</strong> — shedding at the valves and slowing the poller's pulse under load, with a durable log underneath so slowing down never means losing. If the router is the heart, the publishers are the valves and vessels; this paper is the anatomy of both.</p>
   </div>
 </div>
 
@@ -176,7 +176,7 @@ footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12
   <ul class="notes">
     <li><strong>The transport is dumb.</strong> The WebSocket handler validates a frame and stamps the authentic sender — and stops. It holds no business logic.</li>
     <li><strong>The domain is behind ports.</strong> Durability, delivery, idempotency, the watermark, the send-guard — every one is a port the stages call, never an adapter they import.</li>
-    <li><strong>Capability is composed, not branched.</strong> A new message kind is a row in one table plus a chain of (mostly existing) stages. You add a bead to a string; you don't add an <code>if</code> to the socket.</li>
+    <li><strong>Capability is composed, not branched.</strong> A new message kind is a new <em>route declaration</em> — one line in the routing map — plus a chain of (mostly existing) stages. You add a bead to a string; you don't add an <code>if</code> to the socket.</li>
   </ul>
   <p class="pull">The router does not dispatch a message to a handler. It shepherds the message, in a context, through a fixed itinerary — to a definite end.</p>
 </section>
@@ -335,11 +335,15 @@ case INBOUND_PERSISTENT -> authorizationStage.apply(context)
       </tbody>
     </table>
   </div>
-  <p>Two invariants make the guarantee real: <strong>a stage never throws out of the chain</strong> — every stage ends <code>.onFailure().invoke(setError).recoverWithItem(ctx)</code>, so a fault is <em>recorded on the context</em> and the same context flows on; and <strong>the route always terminates at <code>FinalStage</code></strong> — error or success, group or 1:1, every arm ends there, so every message produces a definite <code>processed = true/false</code> and nothing dangles.</p>
+  <p>Two invariants make the guarantee real. <strong>No stage failure escapes the pipeline boundary.</strong> A stage may fail internally — a DB error, a dead socket — but every stage ends <code>.onFailure().invoke(setError).recoverWithItem(ctx)</code>, so the failure is <em>caught, recorded on the context as <code>error</code>, and the same context flows on</em>; it is converted into state, never thrown out of the chain. And <strong>the route always terminates at <code>FinalStage</code></strong> — error or success, group or 1:1, every arm ends there, so every message produces a definite <code>processed = true/false</code> and nothing dangles.</p>
+  <div class="callout">
+    <p class="tag">a rule for the context, so it never becomes a god-object</p>
+    <p>The <code>RouterContext</code> holds <strong>only route-local execution state and the four stage outcomes</strong> — never domain state. A stage keeps its working data private unless a <em>later</em> stage genuinely needs it; a new stage does not get to bolt an arbitrary field onto the shared bag. That is what keeps "one context down the chain" from silently growing into a dumping ground.</p>
+  </div>
 </section>
 <figure class="wide reveal">
   <div class="panel">
-    <svg viewBox="0 0 900 214" role="img" aria-label="A RouterContext walks the stage chain — Authorize, Outbox (sets persisted), Ack (sets acknowledged), AsyncHandoff — and ends at FinalStage. A stage never throws: on failure it records the error on the context and recovers to it, and the route short-circuits straight to Final, which always terminates the message." style="width:100%;height:auto;display:block">
+    <svg viewBox="0 0 900 214" role="img" aria-label="A RouterContext walks the stage chain — Authorize, Outbox (sets persisted), Ack (sets acknowledged), AsyncHandoff — and ends at FinalStage. no stage failure escapes the chain: on failure it records the error on the context and recovers to it, and the route short-circuits straight to Final, which always terminates the message." style="width:100%;height:auto;display:block">
       <defs>
         <marker id="ah3" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker>
         <marker id="ah3c" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--amber-line)"/></marker>
@@ -502,8 +506,65 @@ public class AsyncHandoffStage implements PipelineStage&lt;RouterContext&lt;Mess
       </tbody>
     </table>
   </div>
-  <p>Read the anatomy across the table: the two <strong>intake</strong> wheels are the heart's inflow valves; <strong>FastDelivery</strong> is the artery the inbound chamber pumps into and then <em>lets go</em> — the message flies off on the wheel's own subscription while inbound returns for the next frame; the <strong>Kafka offline-push</strong> vessel is the capillary carrying a notification to a user who isn't even connected; and the <strong>coalescing</strong> batchers turn a flood into a steady drip, so Postgres and Redis see few, large operations instead of many small ones. The offload is always safe because the outbox row is written <em>before</em> the hand-off — a shed live delivery is simply re-delivered by the poller.</p>
+  <p>Read the anatomy across the table: the two <strong>intake</strong> wheels are the heart's inflow valves; <strong>FastDelivery</strong> is the artery the inbound chamber pumps into and then <em>lets go</em> — the message flies off on the wheel's own subscription while inbound returns for the next frame; the <strong>Kafka offline-push</strong> vessel is the capillary carrying a notification to a user who isn't even connected; and the <strong>coalescing</strong> batchers turn a flood into a steady drip, so Postgres and Redis see few, large operations instead of many small ones.</p>
+
+  <h3>What a shed means — and where "no loss" begins</h3>
+  <p>Every wheel sheds the same way — <code>publish()</code> returns <code>false</code> — but the <em>consequence</em> is not the same, and being sloppy about it would overclaim the guarantee. It turns entirely on one line: <strong>durable acceptance</strong>. A shed before the outbox write is an <em>admission</em> decision; a shed after it is only a <em>delivery</em> decision.</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>The same <code>publish()==false</code>, three different meanings — split by whether the message is durable yet.</caption>
+      <thead><tr><th>Vessel</th><th>A shed means</th><th>Because</th></tr></thead>
+      <tbody>
+        <tr><td class="k">InboundPublisher <span style="color:var(--faint)">· intake</span></td><td>admission <strong>rejected</strong> — the frame is refused and the sender gets a rate-limited overload notice</td><td><em>before</em> the boundary — nothing is durable yet; this is the one shed that can drop a not-yet-accepted message</td></tr>
+        <tr><td class="k">RoutingBackpressure <span style="color:var(--faint)">· poller</span></td><td>the live attempt is <strong>deferred</strong> — the row stays in the outbox and is re-polled</td><td><em>after</em> the boundary — the row is already durable</td></tr>
+        <tr><td class="k">FastDelivery <span style="color:var(--faint)">· fast-path</span></td><td>the live attempt is <strong>deferred</strong> to the catch-up poller</td><td><em>after</em> the boundary — persisted before the hand-off</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="pull">Shedding a delivery is a delivery decision, not a durability decision. The no-loss guarantee begins at durable acceptance; before it, admission may be refused under overload — and the design says so out loud.</p>
 </section>
+<figure class="wide reveal">
+  <div class="panel">
+    <svg viewBox="0 0 900 300" role="img" aria-label="One message's life. Before the durable-acceptance boundary, admission may be refused if the inbound queue is full. After the boundary, the message is in the outbox and history; a live delivery attempt either succeeds and is acknowledged, or is shed and re-polled later. Either way it reaches done. No loss is claimed only to the right of the boundary." style="width:100%;height:auto;display:block">
+      <defs>
+        <marker id="ah6" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--faint)"/></marker>
+        <marker id="ah6a" markerWidth="9" markerHeight="8" refX="7.5" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="var(--amber-line)"/></marker>
+      </defs>
+      <!-- the durable boundary -->
+      <line x1="316" y1="12" x2="316" y2="288" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="2 5"/>
+      <text x="322" y="24" font-family="'IBM Plex Mono',monospace" font-size="10" letter-spacing="1.2" fill="var(--accent)">DURABLE ACCEPTANCE</text>
+      <text x="150" y="24" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">admission may shed</text>
+      <text x="610" y="24" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--good)">NO-LOSS CLAIM HOLDS →</text>
+      <!-- left of boundary -->
+      <g font-family="'IBM Plex Mono',monospace" font-size="12.5" fill="var(--ink)">
+        <rect x="24" y="118" width="120" height="56" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/><text x="40" y="151">Message</text>
+        <rect x="176" y="118" width="120" height="56" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/><text x="192" y="145">resolve +</text><text x="192" y="163">router · stages</text>
+      </g>
+      <rect x="70" y="212" width="150" height="40" rx="9" fill="var(--amber-soft)" stroke="var(--amber-line)"/><text x="86" y="237" font-family="'IBM Plex Mono',monospace" font-size="11.5" fill="var(--amber)">admission shed → refuse</text>
+      <line x1="120" y1="174" x2="120" y2="210" stroke="var(--amber-line)" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ah6a)"/>
+      <text x="126" y="196" font-family="'IBM Plex Mono',monospace" font-size="9.5" fill="var(--amber)">queue full</text>
+      <line x1="144" y1="146" x2="174" y2="146" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah6)"/>
+      <!-- crossing the boundary: persist -->
+      <line x1="296" y1="146" x2="360" y2="146" stroke="var(--accent)" stroke-width="1.7" marker-end="url(#ah6)"/>
+      <text x="300" y="138" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--accent-deep)">persist</text>
+      <!-- right of boundary -->
+      <g font-family="'IBM Plex Mono',monospace">
+        <rect x="362" y="118" width="150" height="56" rx="9" fill="var(--good-soft)" stroke="var(--good)"/><text x="378" y="145" font-size="12.5" fill="var(--ink)">outbox + history</text><text x="378" y="163" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">durable truth</text>
+        <rect x="560" y="54"  width="150" height="52" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/><text x="576" y="80" font-size="12.5" fill="var(--ink)">sent → ACK</text><text x="576" y="97" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--good)">watermark advances</text>
+        <rect x="560" y="186" width="150" height="52" rx="9" fill="var(--surface-2)" stroke="var(--hair-strong)"/><text x="576" y="212" font-size="12.5" fill="var(--ink)">shed → re-poll</text><text x="576" y="229" font-family="'IBM Plex Sans',sans-serif" font-size="11" fill="var(--muted)">stays in outbox</text>
+        <rect x="762" y="118" width="112" height="56" rx="9" fill="var(--good-soft)" stroke="var(--good)"/><text x="778" y="151" font-size="12.5" fill="var(--ink)">done</text>
+      </g>
+      <line x1="512" y1="140" x2="558" y2="88"  stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah6)"/>
+      <text x="516" y="112" font-family="'IBM Plex Mono',monospace" font-size="10" fill="var(--faint)">live attempt</text>
+      <line x1="512" y1="152" x2="558" y2="204" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah6)"/>
+      <line x1="710" y1="80"  x2="800" y2="118" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah6)"/>
+      <line x1="710" y1="212" x2="800" y2="174" stroke="var(--faint)" stroke-width="1.5" marker-end="url(#ah6)"/>
+      <path d="M635 186 C 635 150, 635 130, 600 118" fill="none" stroke="var(--faint)" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ah6)"/>
+      <text x="640" y="150" font-family="'IBM Plex Mono',monospace" font-size="9.5" fill="var(--faint)">re-poll</text>
+    </svg>
+  </div>
+  <figcaption><span class="fignum">Fig 6</span> — one message's life. To the left of the boundary, admission may shed; to the right, every path reaches <code>done</code> and nothing accepted is lost.</figcaption>
+</figure>
 
 <section class="wrap">
   <span class="sec-label">07 — the reflex</span>
@@ -554,6 +615,8 @@ public class AsyncHandoffStage implements PipelineStage&lt;RouterContext&lt;Mess
 </figure>
 <section class="wrap">
   <p>There is a second, cruder lever on the same poller: <strong>skip-while-busy</strong>. Before fetching, the poller checks whether the outbound wheel still has work and <em>skips the fetch entirely</em> if so — so peak in-flight is bounded near one <code>outbound.batch-size</code> regardless of cadence. The system's answer to a load spike is therefore never to fall over and never to buffer unboundedly: it is to <strong>shed at the valves and slow the pulse at the poller</strong> until the pressure clears — pure back-pressure, with a durable log underneath so slowing down never means losing.</p>
+  <h3>Why a drop is the control signal</h3>
+  <p>The regulator watches <em>drops</em>, not queue depth, delivery latency, or in-flight count — and that is a deliberate choice, not an omission. A full bounded queue is the <strong>cheapest direct evidence</strong> that a vessel has hit capacity: a shed is a binary "I cannot accept more," already computed at the exact instant of saturation, needing no sampling, no percentile, no clock. Drop-frequency is a saturation proxy that is <em>free</em> to observe. That is its strength — and, honestly, its ceiling: it reacts to <em>refusal</em>, not to a queue that is deep-but-still-moving or a downstream that is slow-but-not-yet-shedding. It is a back-pressure reflex, not a full latency-aware load controller — which is exactly why it only moves cadence, and why the durable outbox, not the regulator, is what actually guarantees no loss.</p>
   <div class="callout warn">
     <p class="tag">honest boundaries — so no one over-reads the reflex</p>
     <p>It tunes <strong>poll cadence only</strong>, never concurrency — <code>delivery-concurrency</code> / <code>merge(n)</code> are static config; the reflex changes <em>how often</em> the heart refills, not <em>how hard</em> it pumps. Only the <strong>outbound / poller</strong> vessel drives the loop; the <strong>fast-path does not self-throttle</strong> — when full it sheds silently and the durable outbox + poller are its safety net (the row is already committed, so a shed live delivery is re-delivered later). And the adaptive poller is prod-profile only.</p>
@@ -568,13 +631,32 @@ public class AsyncHandoffStage implements PipelineStage&lt;RouterContext&lt;Mess
 <figure class="wide reveal">
   <div class="inv">
     <div class="invcard"><div class="badge">✓ by design</div><div class="id">R<sub>1</sub></div><p><strong>Throughput ⟂ latency.</strong></p><p class="basis">Inbound persist is decoupled from delivery (the hand-off); per-message DB cost is decoupled from arrival rate (group-commit). A slow recipient can't slow the sender's ack.</p></div>
-    <div class="invcard"><div class="badge">✓ durable</div><div class="id">R<sub>2</sub></div><p><strong>No loss under back-pressure.</strong></p><p class="basis">Every vessel may shed, and every shed has a durable net — the outbox, the catch-up poller, the reconnect re-push, the idempotency cache. Persist-before-hand-off is the linchpin.</p></div>
+    <div class="invcard"><div class="badge">✓ durable</div><div class="id">R<sub>2</sub></div><p><strong>No loss <em>after durable acceptance</em>.</strong></p><p class="basis">Past the persistence boundary every shed is only <em>deferred</em> delivery — outbox, catch-up poller, reconnect re-push, idempotency cache. Before it, admission may be refused under overload. The guarantee is honest about where it starts.</p></div>
     <div class="invcard"><div class="badge">✓ isolated</div><div class="id">R<sub>3</sub></div><p><strong>Failure isolation, top to bottom.</strong></p><p class="basis">Stages recover to their context; wheels recover per item and re-subscribe with backoff; a poisoned persist batch retries row-by-row. No single message can down a shared stream.</p></div>
     <div class="invcard"><div class="badge">✓ adaptive</div><div class="id">R<sub>4</sub></div><p><strong>Self-regulation.</strong></p><p class="basis">The reflex trades latency for stability under sustained load automatically, with hysteresis, and hands the operator the whole story in metrics on the vessels.</p></div>
     <div class="invcard"><div class="badge">✓ composed</div><div class="id">R<sub>5</sub></div><p><strong>Capability by composition.</strong></p><p class="basis">A new kind is a resolver row + a chain of mostly-existing stages; fan-out lives behind a port. An ArchUnit rule fails the build if a router depends on a business port or the publisher.</p></div>
   </div>
-  <figcaption><span class="fignum">Fig 6</span> — the payoff. A composable core, and a self-tuning high-load kernel around it.</figcaption>
+  <figcaption><span class="fignum">Fig 7</span> — the payoff. A composable core, and a self-tuning high-load kernel around it.</figcaption>
 </figure>
+<section class="wrap">
+  <h3>The failure taxonomy — one row per thing that can go wrong</h3>
+  <p>Because failures are converted to state (§03) and sheds are bounded by durability (§06), every failure mode has a <em>named</em> recovery — there is no "and then it crashes" row.</p>
+  <div class="tbl-scroll">
+    <table>
+      <caption>What each failure does — the whole point of the design is that this table is short and every recovery is definite.</caption>
+      <thead><tr><th>Failure</th><th>Recovery</th></tr></thead>
+      <tbody>
+        <tr><td>authorization rejected</td><td class="num">terminal — short-circuit to Final, <code>processed=false</code></td></tr>
+        <tr><td>persist transaction transient error</td><td class="num">the wheel / batcher retries with backoff</td></tr>
+        <tr><td>one poisoned row in a persist batch</td><td class="num">row-level individual retry — its 255 neighbours still commit</td></tr>
+        <tr><td>recipient socket unavailable (offline)</td><td class="num">not delivered live → stays in outbox → poller / reconnect re-push</td></tr>
+        <tr><td>a vessel queue is full</td><td class="num">shed — admission refused (intake) <em>or</em> deferred to the outbox (delivery)</td></tr>
+        <tr><td>a single poison message on a wheel</td><td class="num"><code>recoverWithNull()</code> — dropped from that turn, stream lives</td></tr>
+        <tr><td>terminal stream error on a wheel</td><td class="num">re-subscribe with backoff — the wheel is immortal</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 <section class="wrap">
   <p style="max-width:var(--measure); color:var(--muted); font-size:14.5px">Stated plainly: <strong>one <code>Message</code>, one resolver, two routers, a string of stages, and a family of vessels.</strong> The heart stays small and clean; the vessels do the bursty, slow, dangerous work off to the side and tell you how they're coping. That division — <em>a composable core, and a self-tuning high-load kernel around it</em> — is the whole design. The delivery substrate the outbound chamber feeds (outbox, poller, watermark GC, and its Kafka-portable offset model) is the companion delivery paper; the end-to-end encryption laid over the same transport is <a href="encryption.html">the encryption paper</a>.</p>
 </section>
