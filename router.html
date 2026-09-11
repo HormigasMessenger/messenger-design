@@ -389,7 +389,7 @@ case INBOUND_PERSISTENT -> authorizationStage.apply(context)
   <h2>A two-line interface that can be anything</h2>
   <p>Every bead on every string implements one interface. That is the entire extension surface of the system:</p>
   <pre class="code">public interface PipelineStage&lt;T&gt; {
-    Uni&lt;T&gt; apply(T ctx);   <span class="c">// do ONE thing · record the outcome on the context · never throw</span>
+    Uni&lt;T&gt; apply(T ctx);   <span class="c">// do ONE thing · record the outcome on the context · failures stay inside the pipeline</span>
 }</pre>
   <p>A stage is a CDI bean the router injects and threads into chains. Behind that two-line contract, a stage can be <strong>anything a step in a message's life needs to be</strong> — and the catalogue already spans the lot:</p>
   <div class="tbl-scroll">
